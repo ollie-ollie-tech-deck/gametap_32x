@@ -4,9 +4,11 @@
 
 **Warning:** This hack contains blood, gore, and themes of depression.
 
-## Note
+## Notes
 
 Towards the end of development, we were beginning to crunch. As such, there will be chunks of code that are outright sloppy (particularly in regards to RPG mode cutscenes and NPC movement). Keep that in mind if you choose to look through the code.
+
+Also, provided in the "assets" folder is the script for Aseprite used for loading and saving 32X-specific sprites and palettes, alongside the original project files for the sprites.
 
 ## Credits
 * **Project Lead** - Ollie_Ollie_TechDeck (_HaHaHyena)
