@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ObjDef xmlns="http://www.sonicretro.org" Name="Decor" Image="ollie_bed">
+  <Images>
+    <ImageFromMappings id="ollie_bed">
+      <ArtFile filename="sprites/ollie_decor_art.bin" compression="Uncompressed"/>
+      <MapFile type="ASM" filename="sprites/ollie_decor_sprites.asm" frame="0" startpal="0"/>
+    </ImageFromMappings>
+    <ImageFromMappings id="ollie_pc">
+      <ArtFile filename="sprites/ollie_decor_art.bin" compression="Uncompressed"/>
+      <MapFile type="ASM" filename="sprites/ollie_decor_sprites.asm" frame="1" startpal="0"/>
+    </ImageFromMappings>
+    <ImageFromMappings id="ollie_trash">
+      <ArtFile filename="sprites/ollie_decor_art.bin" compression="Uncompressed"/>
+      <MapFile type="ASM" filename="sprites/ollie_decor_sprites.asm" frame="2" startpal="0"/>
+    </ImageFromMappings>
+    <ImageFromMappings id="ollie_rug">
+      <ArtFile filename="sprites/ollie_decor_art.bin" compression="Uncompressed"/>
+      <MapFile type="ASM" filename="sprites/ollie_decor_sprites.asm" frame="3" startpal="0"/>
+    </ImageFromMappings>
+    <ImageFromMappings id="ollie_toilet">
+      <ArtFile filename="sprites/ollie_decor_art.bin" compression="Uncompressed"/>
+      <MapFile type="ASM" filename="sprites/ollie_decor_sprites.asm" frame="4" startpal="0"/>
+    </ImageFromMappings>
+    <ImageFromMappings id="ollie_bath">
+      <ArtFile filename="sprites/ollie_decor_art.bin" compression="Uncompressed"/>
+      <MapFile type="ASM" filename="sprites/ollie_decor_sprites.asm" frame="5" startpal="0"/>
+    </ImageFromMappings>
+    <ImageFromMappings id="ollie_sink">
+      <ArtFile filename="sprites/ollie_decor_art.bin" compression="Uncompressed"/>
+      <MapFile type="ASM" filename="sprites/ollie_decor_sprites.asm" frame="6" startpal="0"/>
+    </ImageFromMappings>
+    <ImageFromMappings id="ollie_laundry">
+      <ArtFile filename="sprites/ollie_decor_art.bin" compression="Uncompressed"/>
+      <MapFile type="ASM" filename="sprites/ollie_decor_sprites.asm" frame="7" startpal="0"/>
+    </ImageFromMappings>
+    <ImageFromMappings id="ollie_tv">
+      <ArtFile filename="sprites/ollie_decor_art.bin" compression="Uncompressed"/>
+      <MapFile type="ASM" filename="sprites/ollie_decor_sprites.asm" frame="8" startpal="0"/>
+    </ImageFromMappings>
+    <ImageFromMappings id="ollie_couch_1">
+      <ArtFile filename="sprites/ollie_decor_art.bin" compression="Uncompressed"/>
+      <MapFile type="ASM" filename="sprites/ollie_decor_sprites.asm" frame="9" startpal="0"/>
+    </ImageFromMappings>
+    <ImageFromMappings id="ollie_couch_2">
+      <ArtFile filename="sprites/ollie_decor_art.bin" compression="Uncompressed"/>
+      <MapFile type="ASM" filename="sprites/ollie_decor_sprites.asm" frame="10" startpal="0"/>
+    </ImageFromMappings>
+    <ImageFromMappings id="ollie_genesis">
+      <ArtFile filename="sprites/ollie_decor_art.bin" compression="Uncompressed"/>
+      <MapFile type="ASM" filename="sprites/ollie_decor_sprites.asm" frame="11" startpal="0"/>
+    </ImageFromMappings>
+    <ImageFromMappings id="ollie_fridge">
+      <ArtFile filename="sprites/ollie_decor_art.bin" compression="Uncompressed"/>
+      <MapFile type="ASM" filename="sprites/ollie_decor_sprites.asm" frame="12" startpal="0"/>
+    </ImageFromMappings>
+    <ImageFromMappings id="ollie_kitchen_sink">
+      <ArtFile filename="sprites/ollie_decor_art.bin" compression="Uncompressed"/>
+      <MapFile type="ASM" filename="sprites/ollie_decor_sprites.asm" frame="13" startpal="0"/>
+    </ImageFromMappings>
+    <ImageFromMappings id="ollie_plates">
+      <ArtFile filename="sprites/ollie_decor_art.bin" compression="Uncompressed"/>
+      <MapFile type="ASM" filename="sprites/ollie_decor_sprites.asm" frame="14" startpal="0"/>
+    </ImageFromMappings>
+    <ImageFromMappings id="ollie_table">
+      <ArtFile filename="sprites/ollie_decor_art.bin" compression="Uncompressed"/>
+      <MapFile type="ASM" filename="sprites/ollie_decor_sprites.asm" frame="15" startpal="0"/>
+    </ImageFromMappings>
+    <ImageFromMappings id="ollie_garage_door">
+      <ArtFile filename="sprites/ollie_decor_art.bin" compression="Uncompressed"/>
+      <MapFile type="ASM" filename="sprites/ollie_decor_sprites.asm" frame="16" startpal="0"/>
+    </ImageFromMappings>
+    <ImageFromMappings id="ollie_car">
+      <ArtFile filename="sprites/ollie_decor_art.bin" compression="Uncompressed"/>
+      <MapFile type="ASM" filename="sprites/ollie_decor_sprites.asm" frame="17" startpal="0"/>
+    </ImageFromMappings>
+    <ImageFromMappings id="ollie_window">
+      <ArtFile filename="sprites/ollie_decor_art.bin" compression="Uncompressed"/>
+      <MapFile type="ASM" filename="sprites/ollie_decor_sprites.asm" frame="18" startpal="0"/>
+    </ImageFromMappings>
+    <ImageFromMappings id="ollie_wall_crack">
+      <ArtFile filename="sprites/ollie_decor_art.bin" compression="Uncompressed"/>
+      <MapFile type="ASM" filename="sprites/ollie_decor_sprites.asm" frame="19" startpal="0"/>
+    </ImageFromMappings>
+    <ImageFromMappings id="crashing_car">
+      <ArtFile filename="sprites/ollie_decor_art.bin" compression="Uncompressed"/>
+      <MapFile type="ASM" filename="sprites/ollie_decor_sprites.asm" frame="20" startpal="0"/>
+    </ImageFromMappings>
+    <ImageFromMappings id="broken_glass">
+      <ArtFile filename="sprites/ollie_decor_art.bin" compression="Uncompressed"/>
+      <MapFile type="ASM" filename="sprites/ollie_decor_sprites.asm" frame="21" startpal="0"/>
+    </ImageFromMappings>
+    <ImageFromMappings id="candle">
+      <ArtFile filename="sprites/ollie_decor_art.bin" compression="Uncompressed"/>
+      <MapFile type="ASM" filename="sprites/ollie_decor_sprites.asm" frame="22" startpal="0"/>
+    </ImageFromMappings>
+    <ImageFromMappings id="hospital_bed">
+      <ArtFile filename="sprites/hospital_decor_art.bin" compression="Uncompressed"/>
+      <MapFile type="ASM" filename="sprites/hospital_decor_sprites.asm" frame="0" startpal="0"/>
+    </ImageFromMappings>
+    <ImageFromMappings id="hospital_blood_bag">
+      <ArtFile filename="sprites/hospital_decor_art.bin" compression="Uncompressed"/>
+      <MapFile type="ASM" filename="sprites/hospital_decor_sprites.asm" frame="1" startpal="0"/>
+    </ImageFromMappings>
+    <ImageFromMappings id="hospital_side_table">
+      <ArtFile filename="sprites/hospital_decor_art.bin" compression="Uncompressed"/>
+      <MapFile type="ASM" filename="sprites/hospital_decor_sprites.asm" frame="2" startpal="0"/>
+    </ImageFromMappings>
+    <ImageFromMappings id="prison_door">
+      <ArtFile filename="sprites/prison_decor_art.bin" compression="Uncompressed"/>
+      <MapFile type="ASM" filename="sprites/prison_decor_sprites.asm" frame="0" startpal="0"/>
+    </ImageFromMappings>
+    <ImageFromMappings id="prison_toilet">
+      <ArtFile filename="sprites/prison_decor_art.bin" compression="Uncompressed"/>
+      <MapFile type="ASM" filename="sprites/prison_decor_sprites.asm" frame="1" startpal="0"/>
+    </ImageFromMappings>
+    <ImageFromMappings id="prison_sink">
+      <ArtFile filename="sprites/prison_decor_art.bin" compression="Uncompressed"/>
+      <MapFile type="ASM" filename="sprites/prison_decor_sprites.asm" frame="2" startpal="0"/>
+    </ImageFromMappings>
+    <ImageFromMappings id="prison_bed">
+      <ArtFile filename="sprites/prison_decor_art.bin" compression="Uncompressed"/>
+      <MapFile type="ASM" filename="sprites/prison_decor_sprites.asm" frame="3" startpal="0"/>
+    </ImageFromMappings>
+  </Images>
+  <Subtypes>
+    <Subtype id="00" name="Ollie's Bed" image="ollie_bed"/>
+    <Subtype id="01" name="Ollie's PC" image="ollie_pc"/>
+    <Subtype id="02" name="Ollie's Trash Pile" image="ollie_trash"/>
+    <Subtype id="03" name="Ollie's Rug" image="ollie_rug"/>
+    <Subtype id="04" name="Ollie's Toilet" image="ollie_toilet"/>
+    <Subtype id="05" name="Ollie's Bath" image="ollie_bath"/>
+    <Subtype id="06" name="Ollie's Sink" image="ollie_sink"/>
+    <Subtype id="07" name="Ollie's Laundry" image="ollie_laundry"/>
+    <Subtype id="08" name="Ollie's TV" image="ollie_tv"/>
+    <Subtype id="09" name="Ollie's Couch 1" image="ollie_couch_1"/>
+    <Subtype id="0A" name="Ollie's Couch 2" image="ollie_couch_2"/>
+    <Subtype id="0B" name="Ollie's Genesis" image="ollie_genesis"/>
+    <Subtype id="0C" name="Ollie's Fridge" image="ollie_fridge"/>
+    <Subtype id="0D" name="Ollie's Kitchen Sink" image="ollie_kitchen_sink"/>
+    <Subtype id="0E" name="Ollie's Plates" image="ollie_plates"/>
+    <Subtype id="0F" name="Ollie's Table" image="ollie_table"/>
+    <Subtype id="10" name="Ollie's Garage Door" image="ollie_garage_door"/>
+    <Subtype id="11" name="Ollie's Car" image="ollie_car"/>
+    <Subtype id="12" name="Ollie's Bathroom Window" image="ollie_window"/>
+    <Subtype id="13" name="Ollie's Dining Room Window" image="ollie_window"/>
+    <Subtype id="14" name="Ollie's Wall Crack" image="ollie_wall_crack"/>
+    <Subtype id="15" name="Crashing Car" image="crashing_car"/>
+    <Subtype id="16" name="Broken Glass" image="broken_glass"/>
+    <Subtype id="17" name="Candle" image="candle"/>
+    <Subtype id="18" name="Hospital Bed" image="hospital_bed"/>
+    <Subtype id="19" name="Hospital Blood Bag" image="hospital_blood_bag"/>
+    <Subtype id="1A" name="Hospital Side Table" image="hospital_side_table"/>
+    <Subtype id="1B" name="Prison Door" image="prison_door"/>
+    <Subtype id="1C" name="Prison Toilet" image="prison_toilet"/>
+    <Subtype id="1D" name="Prison Sink" image="prison_sink"/>
+    <Subtype id="1E" name="Prison Bed" image="prison_bed"/>
+  </Subtypes>
+</ObjDef>

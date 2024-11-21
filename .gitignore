@@ -1,0 +1,7 @@
+build/
+sonlvl/SonLVL.log
+sonlvl/dllcache/
+*.o
+*.d
+*.32x
+*.lst

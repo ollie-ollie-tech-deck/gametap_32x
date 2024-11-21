@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ObjDef xmlns="http://www.sonicretro.org" Name="NPC" Image="person" RememberState="true">
+  <Images>
+    <ImageFromMappings id="person">
+      <ArtFile filename="sprites/rpg_npc_art.bin" compression="Uncompressed"/>
+      <MapFile type="ASM" filename="sprites/rpg_npc_sprites.asm" frame="0" startpal="0"/>
+    </ImageFromMappings>
+  </Images>
+  <Subtypes>
+    <Subtype id="00" name="Burglar" image="person"/>
+    <Subtype id="01" name="Doctor" image="person"/>
+    <Subtype id="02" name="Cop" image="person"/>
+    <Subtype id="03" name="Main Cultist" image="person"/>
+    <Subtype id="04" name="Cultist 1" image="person"/>
+    <Subtype id="05" name="Cultist 2" image="person"/>
+    <Subtype id="06" name="Warden" image="person"/>
+  </Subtypes>
+  <Properties>
+    <BitsProperty name="NPC Type" type="NpcType" startbit="0" length="8"/>
+  </Properties>
+  <Enums>
+    <Enum name="NpcType">
+      <EnumMember name="Burglar"/>
+      <EnumMember name="Doctor"/>
+      <EnumMember name="Cop"/>
+      <EnumMember name="Main Cultist"/>
+      <EnumMember name="Cultist 1"/>
+      <EnumMember name="Cultist 2"/>
+      <EnumMember name="Warden"/>
+    </Enum>
+  </Enums>
+</ObjDef>

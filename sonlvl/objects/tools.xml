@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ObjDef xmlns="http://www.sonicretro.org" Name="Tool" Image="filler">
+  <Images>
+    <ImageFromMappings id="filler">
+      <ArtFile filename="sprites/tool_art.bin" compression="Uncompressed"/>
+      <MapFile type="ASM" filename="sprites/tool_sprites.asm" frame="0" startpal="0"/>
+    </ImageFromMappings>
+    <ImageFromMappings id="glass">
+      <ArtFile filename="sprites/tool_art.bin" compression="Uncompressed"/>
+      <MapFile type="ASM" filename="sprites/tool_sprites.asm" frame="1" startpal="0"/>
+    </ImageFromMappings>
+    <ImageFromMappings id="toolbox">
+      <ArtFile filename="sprites/tool_art.bin" compression="Uncompressed"/>
+      <MapFile type="ASM" filename="sprites/tool_sprites.asm" frame="2" startpal="0"/>
+    </ImageFromMappings>
+  </Images>
+  <Subtypes>
+    <Subtype id="00" name="Filler" image="filler"/>
+    <Subtype id="01" name="Glass" image="glass"/>
+    <Subtype id="02" name="Toolbox" image="toolbox"/>
+  </Subtypes>
+</ObjDef>

@@ -1,0 +1,35 @@
+	org $2000000
+g_m68k_rom_fixed	group obj($0880000),size($68000)
+g_m68k_rom_fixed_data	group org($2068000),obj($08E8000),size($8000)
+g_m68k_rom_sound_0	group org($2070000),obj($08F0000),size($8000)
+g_m68k_rom_sound_1	group org($2078000),obj($08F8000),size($8000)
+g_sh2_rom		group
+g_sh2_sdram		group obj($6000000),size($3000)
+g_sh2_rom_2		group
+g_sh2_s_cache		group obj($C0000000),size($400)
+g_sh2_rom_3		group
+g_bugged_area		group org($2210000),size($3100)
+g_sh2_rom_4		group org($2213100),size($19CF00) 
+g_m68k_rom_bank_3	group org($23B0000),obj($39B0000),size($50000)
+
+	section.w m68k_header,		g_m68k_rom_fixed
+	section.w m68k_init,		g_m68k_rom_fixed
+	section.w m68k_rom_fixed,	g_m68k_rom_fixed
+	section.w m68k_rom_fixed_data,	g_m68k_rom_fixed_data
+	section.w m68k_rom_sound_0,	g_m68k_rom_sound_0
+
+	section.w m68k_rom_sound_1,	g_m68k_rom_sound_1
+
+	section.l sh2_start,		g_sh2_rom
+	section.l sh2_vectors,		g_sh2_sdram
+	section.l sh2_code,		g_sh2_sdram
+	section.l sh2_end,		g_sh2_rom_2
+	section.l sh2_s_cache_start,	g_sh2_rom_2
+	section.l sh2_s_cache,		g_sh2_s_cache
+	section.l sh2_s_cache_end,	g_sh2_rom_3
+	section.l sh2_data_1,		g_sh2_rom_3
+
+	section.l bugged_area,		g_bugged_area
+	section.l sh2_data_2,		g_sh2_rom_4
+
+	section.w m68k_rom_bank_3,	g_m68k_rom_bank_3

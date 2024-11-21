@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ObjDef xmlns="http://www.sonicretro.org" Name="Monitor" Image="yugioh" RememberState="true">
+  <Images>
+    <ImageFromMappings id="yugioh">
+      <ArtFile filename="sprites/monitor_art.bin" compression="Uncompressed"/>
+      <MapFile type="ASM" filename="sprites/monitor_sprites.asm" frame="0" startpal="0" />
+    </ImageFromMappings>
+    <ImageFromMappings id="shield">
+      <ArtFile filename="sprites/monitor_art.bin" compression="Uncompressed"/>
+      <MapFile type="ASM" filename="sprites/monitor_sprites.asm" frame="1" startpal="0" />
+    </ImageFromMappings>
+    <ImageFromMappings id="invincibility">
+      <ArtFile filename="sprites/monitor_art.bin" compression="Uncompressed"/>
+      <MapFile type="ASM" filename="sprites/monitor_sprites.asm" frame="2" startpal="0" />
+    </ImageFromMappings>
+    <ImageFromMappings id="1up">
+      <ArtFile filename="sprites/monitor_art.bin" compression="Uncompressed"/>
+      <MapFile type="ASM" filename="sprites/monitor_sprites.asm" frame="3" startpal="0" />
+    </ImageFromMappings>
+  </Images>
+  <Subtypes>
+    <Subtype id="00" name="Yu-Gi-Oh Cards" image="yugioh" />
+    <Subtype id="01" name="Shield" image="shield" />
+    <Subtype id="02" name="Invincibility" image="invincibility" />
+    <Subtype id="03" name="1-UP" image="1up" />
+  </Subtypes>
+  <Properties>
+    <BitsProperty name="Contents" type="MonitorType" startbit="0" length="4" />
+  </Properties>
+  <Enums>
+    <Enum name="MonitorType">
+      <EnumMember name="Yu-Gi-Oh Cards" />
+      <EnumMember name="Shield" />
+      <EnumMember name="Invincibility" />
+      <EnumMember name="1-UP" />
+    </Enum>
+  </Enums>
+</ObjDef>

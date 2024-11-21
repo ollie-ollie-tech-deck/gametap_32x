@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ObjDef xmlns="http://www.sonicretro.org" Name="Overlay" Image="32x32" RememberState="true">
+  <Images>
+    <ImageFromMappings id="32x32">
+      <ArtFile filename="sprites/rpg_overlay_art.bin" compression="Uncompressed"/>
+      <MapFile type="ASM" filename="sprites/rpg_overlay_sprites.asm" frame="0" startpal="0" />
+    </ImageFromMappings>
+    <ImageFromMappings id="counter">
+      <ArtFile filename="sprites/rpg_overlay_art.bin" compression="Uncompressed"/>
+      <MapFile type="ASM" filename="sprites/rpg_overlay_sprites.asm" frame="1" startpal="0" />
+    </ImageFromMappings>
+    <ImageFromMappings id="fence">
+      <ArtFile filename="sprites/rpg_overlay_art.bin" compression="Uncompressed"/>
+      <MapFile type="ASM" filename="sprites/rpg_overlay_sprites.asm" frame="2" startpal="0" />
+    </ImageFromMappings>
+    <ImageFromMappings id="garage_door">
+      <ArtFile filename="sprites/rpg_overlay_art.bin" compression="Uncompressed"/>
+      <MapFile type="ASM" filename="sprites/rpg_overlay_sprites.asm" frame="3" startpal="0" />
+    </ImageFromMappings>
+  </Images>
+  <Subtypes>
+    <Subtype id="00" name="32x32" image="32x32"/>
+    <Subtype id="01" name="Counter" image="counter"/>
+    <Subtype id="02" name="Fence" image="fence"/>
+    <Subtype id="03" name="Garage Door" image="garage_door"/>
+  </Subtypes>
+  <Properties>
+    <BitsProperty name="Overlay Type" type="OverlayType" startbit="0" length="8" />
+  </Properties>
+  <Enums>
+    <Enum name="OverlayType">
+      <EnumMember name="32x32" />
+      <EnumMember name="Counter" />
+      <EnumMember name="Fence" />
+      <EnumMember name="Garage Door" />
+    </Enum>
+  </Enums>
+</ObjDef>

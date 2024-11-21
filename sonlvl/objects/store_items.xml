@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ObjDef xmlns="http://www.sonicretro.org" Name="Store Items" Image="cup_noodles">
+  <Images>
+    <ImageFromMappings id="cup_noodles">
+      <ArtFile filename="sprites/store_items_art.bin" compression="Uncompressed"/>
+      <MapFile type="ASM" filename="sprites/store_items_sprites.asm" frame="0" startpal="0"/>
+    </ImageFromMappings>
+    <ImageFromMappings id="axe_body_spray">
+      <ArtFile filename="sprites/store_items_art.bin" compression="Uncompressed"/>
+      <MapFile type="ASM" filename="sprites/store_items_sprites.asm" frame="1" startpal="0"/>
+    </ImageFromMappings>
+    <ImageFromMappings id="cooler">
+      <ArtFile filename="sprites/store_items_art.bin" compression="Uncompressed"/>
+      <MapFile type="ASM" filename="sprites/store_items_sprites.asm" frame="2" startpal="0"/>
+    </ImageFromMappings>
+    <ImageFromMappings id="shampoo">
+      <ArtFile filename="sprites/store_items_art.bin" compression="Uncompressed"/>
+      <MapFile type="ASM" filename="sprites/store_items_sprites.asm" frame="3" startpal="0"/>
+    </ImageFromMappings>
+    <ImageFromMappings id="maruchan">
+      <ArtFile filename="sprites/store_items_art.bin" compression="Uncompressed"/>
+      <MapFile type="ASM" filename="sprites/store_items_sprites.asm" frame="4" startpal="0"/>
+    </ImageFromMappings>
+    <ImageFromMappings id="pocky">
+      <ArtFile filename="sprites/store_items_art.bin" compression="Uncompressed"/>
+      <MapFile type="ASM" filename="sprites/store_items_sprites.asm" frame="5" startpal="0"/>
+    </ImageFromMappings>
+    <ImageFromMappings id="toothpaste">
+      <ArtFile filename="sprites/store_items_art.bin" compression="Uncompressed"/>
+      <MapFile type="ASM" filename="sprites/store_items_sprites.asm" frame="6" startpal="0"/>
+    </ImageFromMappings>
+    <ImageFromMappings id="toothbrush">
+      <ArtFile filename="sprites/store_items_art.bin" compression="Uncompressed"/>
+      <MapFile type="ASM" filename="sprites/store_items_sprites.asm" frame="7" startpal="0"/>
+    </ImageFromMappings>
+    <ImageFromMappings id="kit_kat">
+      <ArtFile filename="sprites/store_items_art.bin" compression="Uncompressed"/>
+      <MapFile type="ASM" filename="sprites/store_items_sprites.asm" frame="8" startpal="0"/>
+    </ImageFromMappings>
+    <ImageFromMappings id="twix">
+      <ArtFile filename="sprites/store_items_art.bin" compression="Uncompressed"/>
+      <MapFile type="ASM" filename="sprites/store_items_sprites.asm" frame="9" startpal="0"/>
+    </ImageFromMappings>
+    <ImageFromMappings id="lays">
+      <ArtFile filename="sprites/store_items_art.bin" compression="Uncompressed"/>
+      <MapFile type="ASM" filename="sprites/store_items_sprites.asm" frame="10" startpal="0"/>
+    </ImageFromMappings>
+    <ImageFromMappings id="doritos">
+      <ArtFile filename="sprites/store_items_art.bin" compression="Uncompressed"/>
+      <MapFile type="ASM" filename="sprites/store_items_sprites.asm" frame="11" startpal="0"/>
+    </ImageFromMappings>
+    <ImageFromMappings id="ruffles">
+      <ArtFile filename="sprites/store_items_art.bin" compression="Uncompressed"/>
+      <MapFile type="ASM" filename="sprites/store_items_sprites.asm" frame="12" startpal="0"/>
+    </ImageFromMappings>
+    <ImageFromMappings id="taquitos">
+      <ArtFile filename="sprites/store_items_art.bin" compression="Uncompressed"/>
+      <MapFile type="ASM" filename="sprites/store_items_sprites.asm" frame="13" startpal="0"/>
+    </ImageFromMappings>
+    <ImageFromMappings id="hot_dog">
+      <ArtFile filename="sprites/store_items_art.bin" compression="Uncompressed"/>
+      <MapFile type="ASM" filename="sprites/store_items_sprites.asm" frame="14" startpal="0"/>
+    </ImageFromMappings>
+  </Images>
+  <Subtypes>
+    <Subtype id="00" name="Cup Noodles" image="cup_noodles"/>
+    <Subtype id="01" name="Axe Body Spray" image="axe_body_spray"/>
+    <Subtype id="02" name="Cooler" image="cooler"/>
+    <Subtype id="03" name="Shampoo" image="shampoo"/>
+    <Subtype id="04" name="Maruchan" image="maruchan"/>
+    <Subtype id="05" name="Pocky" image="pocky"/>
+    <Subtype id="06" name="Toothpaste" image="toothpaste"/>
+    <Subtype id="07" name="Toothbrush" image="toothbrush"/>
+    <Subtype id="08" name="Kit Kat" image="kit_kat"/>
+    <Subtype id="09" name="Twix" image="twix"/>
+    <Subtype id="0A" name="Lays" image="lays"/>
+    <Subtype id="0B" name="Doritos" image="doritos"/>
+    <Subtype id="0C" name="Ruffles" image="ruffles"/>
+    <Subtype id="0D" name="Taquitos" image="taquitos"/>
+    <Subtype id="0E" name="Hot Dog" image="hot_dog"/>
+  </Subtypes>
+</ObjDef>
