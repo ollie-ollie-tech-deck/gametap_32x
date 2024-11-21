@@ -22,11 +22,15 @@ Towards the end of development, we were beginning to crunch. As such, there will
 ## Awards
 
 ![Polygon Jim Trophy](./assets/trophies/polygon_jim.png)
+
 ![Polygon Jim Community Trophy](./assets/trophies/polygon_jim_c.png)
+
 ![Professor Pickle Community Trophy](./assets/trophies/prof_pickle_c.png)
 
 ### Honorable Mentions
 
 ![Hexadecimal Community Trophy](./assets/trophies/honor_hex_c.png)
+
 ![Eggrobo Community Trophy](./assets/trophies/honor_eggrobo_c.png)
+
 ![Storybook Community Trophy](./assets/trophies/honor_storybook_c.png)
