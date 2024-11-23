@@ -1,6 +1,6 @@
 # GameTap, Cup Noodles, and Bitter Tears
 
-***GameTap, Cup Noodles, and Bitter Tears*** is a follow up to 2019's GameTap Pro Gamer 6, developed by Steazy Games. Based off of Knuckles' Chaotix and Sonic 3 and Knuckles, this hack features RPG elements, nods to early 2010's creepypasta culture, and a loose retelling of Ollie_Ollie_TechDeck's life story leading up to this hack.
+***GameTap, Cup Noodles, and Bitter Tears*** is a follow up to 2019's GameTap Pro Gamer 6, developed by Steazy Games, for the Sega Genesis 32X. Based off of Knuckles' Chaotix and Sonic 3 and Knuckles, this hack features RPG elements, nods to early 2010's creepypasta culture, and a loose retelling of Ollie_Ollie_TechDeck's life story leading up to this hack.
 
 **Warning:** This hack contains blood, gore, and themes of depression.
 
