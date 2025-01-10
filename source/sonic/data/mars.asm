@@ -15,6 +15,9 @@
 MarsSpr_SonicPlayer:
 	incbin	"source/sonic/data/mars/player_sprites.spr"
 	cnop	0,4
+MarsSpr_SonicHealth:
+	incbin	"source/sonic/data/mars/health_sprites.spr"
+	cnop	0,4
 MarsSpr_SonicOverlay:
 	incbin	"source/sonic/data/mars/overlay_sprites.spr"
 	cnop	0,4

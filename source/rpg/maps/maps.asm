@@ -319,7 +319,7 @@ RpgMapData:
 		CollisionWidths,		&
 		CollisionAngles,		&
 		Objects_HospitalHallway,	&
-		0, $A80, 0, $9C0,		&
+		0, $B40, 0, $A80,		&
 		0, $200, 0, $100,		&
 		Init_HospitalHallway,		&
 		Draw_HospitalHallway,		&

@@ -68,9 +68,19 @@ PreChargeState:
 	lea	Anim_RingGirlBoss(pc),a1
 	moveq	#1,d0
 	jsr	SetAnimation
+	
+	moveq	#0,d1						; Set timer
+	move.b	ring_girl.hit_count(a6),d1
+	add.w	d1,d1
+	move.w	.Timers(pc,d1.w),ring_girl.timer(a6)
 
-	move.w	#120,ring_girl.timer(a6)			; Set timer
 	move.l	#.PreCharge,obj.update(a6)			; Start pre-charging
+	bra.s	.PreCharge
+
+; ------------------------------------------------------------------------------
+
+.Timers:
+	dc.w	1, 75, 80, 85, 90, 95, 110, 115, 120
 
 ; ------------------------------------------------------------------------------
 
@@ -82,10 +92,10 @@ PreChargeState:
 	bsr.w	HazardObject					; Hazard object
 
 	cmpi.w	#3,obj.anim+anim.id(a6)				; Are we turning?
-	beq.s	.Draw						; If so, branch
+	beq.w	.Draw						; If so, branch
 
 	subq.w	#1,ring_girl.timer(a6)				; Decrement timer
-	beq.s	.Charge						; If it has run out, branch
+	beq.w	.Charge						; If it has run out, branch
 	cmpi.w	#5,ring_girl.timer(a6)				; Have we finished aiming?
 	bcs.s	.Draw						; If not, branch
 
@@ -102,14 +112,19 @@ PreChargeState:
 
 .SetYSpeed:
 	move.w	d0,obj.y_speed(a6)
-	cmpi.w	#75,ring_girl.timer(a6)				; Have we crouched for enough time?
-	bcc.s	.Draw						; If not, branch
+
+	cmpi.w	#2,obj.anim+anim.id(a6)				; Are we fully crouching?
+	bcs.s	.Draw						; If so, branch
 
 	move.b	obj.flags(a6),d0				; Get previous X flip flag
 	andi.b	#1<<OBJ_FLIP_X,d0
 
-	move.w	#-$600,obj.x_speed(a6)				; Face towards the player
-	bclr	#OBJ_FLIP_X,obj.flags(a6)
+	moveq	#0,d1						; Set X speed
+	move.b	ring_girl.hit_count(a6),d1
+	add.w	d1,d1
+	move.w	.Speeds(pc,d1.w),obj.x_speed(a6)
+
+	bclr	#OBJ_FLIP_X,obj.flags(a6)			; Face towards the player
 	move.w	obj.x(a1),d1
 	cmp.w	obj.x(a6),d1
 	blt.s	.CheckTurnAnim
@@ -136,6 +151,11 @@ PreChargeState:
 
 	move.l	#ChargeState,obj.update(a6)			; Charge
 	bra.s	.Draw
+
+; ------------------------------------------------------------------------------
+
+.Speeds:
+	dc.w	-$700, -$700, -$6C0, -$690, -$660, -$630, -$600, -$600, -$600
 
 ; ------------------------------------------------------------------------------
 ; Charge state
@@ -253,7 +273,7 @@ RecoverState:
 	moveq	#0,d0
 	jsr	SetAnimation
 
-	move.w	#180,ring_girl.timer(a6)			; Set timer
+	move.w	#120,ring_girl.timer(a6)			; Set timer
 	move.l	#.Recover,obj.update(a6)			; Start recovery
 
 ; ------------------------------------------------------------------------------
@@ -467,7 +487,7 @@ Anim_RingGirlBoss:
 
 .PreChargeStart:
 	ANIM_START $40, ANIM_SWITCH, 2
-	dc.w	0, 0, 0, 5, 6
+	dc.w	0, 0, 0, 5, 6, 7, 7, 7
 	ANIM_END
 
 .PreCharge:
@@ -512,7 +532,7 @@ ObjCouch:
 	move.w	#4,obj.collide_height(a6)
 
 	move.w	#160,obj.x(a6)					; Set position
-	move.w	#120,obj.y(a6)
+	move.w	#112,obj.y(a6)
 	
 	move.l	#CouchState,obj.update(a6)			; Set state
 

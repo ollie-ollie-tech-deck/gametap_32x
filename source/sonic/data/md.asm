@@ -12,9 +12,6 @@
 ; Art
 ; ------------------------------------------------------------------------------
 
-Art_Health:
-	incbin	"source/sonic/data/md/health_art.kosm"
-	even
 Art_YugiohCard:
 	incbin	"source/sonic/data/md/yugioh_art.kosm"
 	even
@@ -44,9 +41,6 @@ Art_SlendermanBg:
 ; Sprites
 ; ------------------------------------------------------------------------------
 
-Spr_Health:
-	include	"source/sonic/data/md/health_sprites.asm"
-	even
 Spr_CollapseLedge:
 	include	"source/sonic/data/md/collapse_ledge_sprites.asm"
 	even

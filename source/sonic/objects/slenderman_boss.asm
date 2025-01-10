@@ -25,7 +25,7 @@ ObjSlendermanBoss:
 	move.w	#256,obj.y(a6)
 	move.w	#$100,slenderman.scale(a6)			; Set scale
 
-	move.b	#8,slenderman.hit_count(a6)			; Set hit count
+	move.b	#6,slenderman.hit_count(a6)			; Set hit count
 
 	move.l	#MoveUpState,obj.update(a6)			; Set state
 	move.l	#Draw,obj.draw(a6)				; Set draw routine
@@ -57,6 +57,7 @@ AttackState:
 	move.l	#ObjFist,obj.update(a1)
 	move.w	#64,obj.x(a1)
 	move.w	a1,slenderman.fist(a6)
+	move.w	a6,slender_fist.parent(a1)
 
 	move.l	#.WaitLeftFist,obj.update(a6)			; Wait for the left fist to finish
 
@@ -72,6 +73,7 @@ AttackState:
 	bset	#OBJ_FLIP_X,obj.flags(a1)
 	move.w	#256,obj.x(a1)
 	move.w	a1,slenderman.fist(a6)
+	move.w	a6,slender_fist.parent(a1)
 
 	move.l	#.WaitRightFist,obj.update(a6)			; Wait for the right fist to finish
 
@@ -241,8 +243,19 @@ FistMoveUpState:
 ; ------------------------------------------------------------------------------
 
 FistFollowState:
-	move.w	#180,slender_fist.timer(a6)			; Set timer
+	movea.w	slender_fist.parent(a6),a1			; Set timer
+	moveq	#0,d1
+	move.b	slenderman.hit_count(a1),d1
+	add.w	d1,d1
+	move.w	.Timers(pc,d1.w),slender_fist.timer(a6)
+
 	move.l	#.Follow,obj.update(a6)				; Start following
+	bra.s	.Follow
+
+; ------------------------------------------------------------------------------
+
+.Timers:
+	dc.w	105, 105, 120, 135, 150, 165, 180
 
 ; ------------------------------------------------------------------------------
 
@@ -253,16 +266,27 @@ FistFollowState:
 	movea.w	player_object,a1				; Get speed to move towards player
 	move.w	obj.x(a1),d0
 	sub.w	obj.x(a6),d0
-	asl.w	#3,d0
+	add.w	d0,d0
+	add.w	d0,d0
+	move.w	d0,d1
+	add.w	d0,d0
+	add.w	d1,d0
 
-	cmpi.w	#-$400,d0					; Is it too large for moving left?
+	movea.w	slender_fist.parent(a6),a1			; Get max speed
+	moveq	#0,d1
+	move.b	slenderman.hit_count(a1),d1
+	add.w	d1,d1
+	move.w	.MaxSpeeds(pc,d1.w),d1
+
+	cmp.w	d1,d0						; Is it too large for moving left?
 	bge.s	.CheckRightMax					; If not, branch
-	move.w	#-$400,d0					; Cap the speed
+	move.w	d1,d0						; Cap the speed
 
 .CheckRightMax:
-	cmpi.w	#$400,d0					; Is it too large for moving right?
+	neg.w	d1						; Is it too large for moving right?
+	cmp.w	d1,d0
 	ble.s	.SetXSpeed					; If not, branch
-	move.w	#$400,d0					; Cap the speed
+	move.w	d1,d0						; Cap the speed
 
 .SetXSpeed:
 	move.w	d0,obj.x_speed(a6)				; Set X speed
@@ -286,9 +310,23 @@ FistFollowState:
 	jmp	DrawObject					; Draw sprite
 
 .Slam:
+	movea.w	slender_fist.parent(a6),a1			; Set slam wait time
+	moveq	#0,d1
+	move.b	slenderman.hit_count(a1),d1
+	add.w	d1,d1
+	move.w	.WaitTimes(pc,d1.w),slender_fist.timer(a6)
+
 	clr.w	obj.x_speed(a6)					; Prepare to slam
-	move.w	#15,slender_fist.timer(a6)
 	move.l	#FistSlamState,obj.update(a6)
+	bra.s	FistSlamState
+
+; ------------------------------------------------------------------------------
+
+.MaxSpeeds:
+	dc.w	-$480, -$480, -$400, -$380, -$300, -$280, -$200
+	
+.WaitTimes:
+	dc.w	5, 5, 7, 9, 11, 13, 15
 
 ; ------------------------------------------------------------------------------
 ; Fist slam state

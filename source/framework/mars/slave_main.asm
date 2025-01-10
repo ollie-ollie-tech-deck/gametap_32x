@@ -79,7 +79,7 @@ SlaveReset:
 
 ; ------------------------------------------------------------------------------
 
-	mov.l	#$FF00FF00,r0					; Prepare communication registers for PWM driver
+	xor	r0,r0						; Reset communication registers for PWM driver
 	mov.l	r0,@(COMM_8,r14)
 	mov.l	r0,@(COMM_12,r14)
 

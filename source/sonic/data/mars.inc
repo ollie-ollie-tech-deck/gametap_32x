@@ -6,6 +6,7 @@
 ; ------------------------------------------------------------------------------
 
 	global MarsSpr_SonicPlayer
+	global MarsSpr_SonicHealth
 	global MarsSpr_SonicOverlay
 	global MarsSpr_SonicMonitor
 	global MarsSpr_SonicPlatform

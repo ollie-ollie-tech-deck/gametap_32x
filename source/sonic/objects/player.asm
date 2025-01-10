@@ -340,13 +340,26 @@ RollState:
 	bsr.w	SetCollisionLayer				; Set collision layer
 	lea	Physics(pc),a5					; Get physics table
 	
+	tst.b	player.spin_tunnel(a6)				; Are we in a spin tunnel?
+	bne.s	.NoJump						; If so, branch
 	bsr.w	CheckJump					; Check for jumping
+
+.NoJump:
 	bsr.w	RollSlopePhysics				; Slope physics
 	bsr.w	MoveRoll					; Handle movement
 	
 	tst.w	player.ground_speed(a6)				; Are we not moving anymore?
 	bne.s	RollState2					; If not, branch
+	tst.b	player.spin_tunnel(a6)				; Are we in a spin tunnel?
+	beq.s	.Unroll						; If not, branch
 
+	lea	Sfx_Roll,a0					; Play roll sound
+	jsr	PlaySfx
+
+	move.w	#$200,player.ground_speed(a6)			; Keep rolling
+	bra.s	RollState2
+
+.Unroll:
 	move.l	#GroundState,obj.update(a6)			; Set ground state
 	bclr	#SONIC_ROLL,obj.flags(a6)
 	bra.w	GroundState2
@@ -1301,10 +1314,19 @@ SetGroundState:
 	bclr	#SONIC_AIR,obj.flags(a6)			; Clear air flag
 	beq.s	.End						; If it was already cleared, branch
 	
-	move.l	#GroundState,obj.update(a6)			; Set ground state
-	bclr	#SONIC_ROLL,obj.flags(a6)			; Clear roll flag
 	bclr	#SONIC_JUMP,obj.flags(a6)			; Stop jumping
 	bclr	#SONIC_PUSH,obj.flags(a6)			; Stop pushing
+	
+	tst.b	player.spin_tunnel(a6)				; Are we in a spin tunnel?
+	bne.s	.SpinTunnel					; If so, branch
+
+	move.l	#GroundState,obj.update(a6)			; Set ground state
+	bclr	#SONIC_ROLL,obj.flags(a6)			; Clear roll flag
+	rts
+
+.SpinTunnel:
+	move.l	#RollState,obj.update(a6)			; Set roll state
+	bset	#SONIC_ROLL,obj.flags(a6)			; Start rolling
 
 .End:
 	rts
@@ -1314,6 +1336,7 @@ SetGroundState:
 ; ------------------------------------------------------------------------------
 
 SetRollState:
+SetSonicPlayerRoll:
 	move.l	#RollState,obj.update(a6)			; Set roll state
 	bset	#SONIC_ROLL,obj.flags(a6)			; Start rolling
 	

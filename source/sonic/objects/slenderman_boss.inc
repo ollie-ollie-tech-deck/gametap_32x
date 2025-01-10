@@ -25,6 +25,7 @@ slenderman.struct_len	rs.b 0					; Length of structure
 
 	rsset obj.vars
 slender_fist.timer	rs.w 1					; Timer
+slender_fist.parent	rs.w 1					; Parent object
 slender_fist.struct_len	rs.b 0					; Length of structure
 
 ; ------------------------------------------------------------------------------

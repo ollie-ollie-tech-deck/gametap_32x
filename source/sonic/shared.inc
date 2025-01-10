@@ -40,6 +40,7 @@
 	include	"source/sonic/objects/rock.inc"
 	include	"source/sonic/objects/slenderman_boss.inc"
 	include	"source/sonic/objects/spikes.inc"
+	include	"source/sonic/objects/spin_tunnel.inc"
 	include	"source/sonic/objects/spring.inc"
 	include	"source/sonic/objects/toad_boss.inc"
 	include	"source/sonic/objects/wall.inc"

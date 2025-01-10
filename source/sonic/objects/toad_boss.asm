@@ -39,7 +39,7 @@ ObjToadBoss:
 
 .Fall:
 	jsr	MoveObject					; Move
-	addi.w	#$38,obj.y_speed(a6)				; Apply gravity
+	bsr.w	ApplyGravity					; Apply gravity
 	
 	jsr	ObjMapCollideDownWide				; Check floor collision
 	tst.w	d1
@@ -125,7 +125,7 @@ JumpState:
 
 	bsr.w	MoveHorizontal					; Move
 	jsr	MoveObject
-	addi.w	#$38,obj.y_speed(a6)				; Apply gravity
+	bsr.w	ApplyGravity					; Apply gravity
 	bsr.w	CheckWallCollision				; Check wall collision
 	
 	tst.w	obj.y_speed(a6)					; Are we falling downwards?
@@ -172,6 +172,8 @@ TripState:
 	
 	lea	Sfx_HitBoss,a0					; Play hit boss sound
 	jsr	PlaySfx
+	
+	move.w	#$FF28,MARS_COMM_12+MARS_SYS			; Play hurt sound
 
 	subq.b	#1,toad.hit_count(a6)				; Decrement hit count
 	bne.s	.GotHit						; If we haven't been defeated, branch
@@ -258,7 +260,10 @@ DefeatedState:
 ; ------------------------------------------------------------------------------
 
 MoveHorizontal:
-	moveq	#$10,d0						; Acceleration
+	moveq	#0,d0						; Get acceleration
+	move.b	toad.hit_count(a6),d0
+	add.w	d0,d0
+	move.w	.Accels(pc,d0.w),d0
 	
 	cmpi.l	#JumpState,obj.update(a6)			; Are we moving in the air?
 	beq.s	.MoveNormal					; If so, branch
@@ -278,25 +283,54 @@ MoveHorizontal:
 	rts
 	
 .MoveNormal:
-	move.w	obj.x(a6),d1					; Are we left of the player?
-	cmp.w	obj.x(a1),d1
+	moveq	#0,d1						; Get max speed
+	move.b	toad.hit_count(a6),d1
+	add.w	d1,d1
+	move.w	.MaxSpeeds(pc,d1.w),d1
+
+	move.w	obj.x(a6),d2					; Are we left of the player?
+	cmp.w	obj.x(a1),d2
 	blt.s	.MoveRight					; If so, branch
 	
 .MoveLeft:
 	sub.w	d0,obj.x_speed(a6)				; Accelerate left
-	cmpi.w	#-$280,obj.x_speed(a6)				; Are we moving fast enough?
-	bgt.s	.End						; If not, branch
-	move.w	#-$280,obj.x_speed(a6)				; Cap speed
+	cmp.w	obj.x_speed(a6),d1				; Are we moving fast enough?
+	ble.s	.End						; If not, branch
+	move.w	d1,obj.x_speed(a6)				; Cap speed
 	bra.s	.End
 	
 .MoveRight:
 	add.w	d0,obj.x_speed(a6)				; Accelerate right
-	cmpi.w	#$280,obj.x_speed(a6)				; Are we moving fast enough?
-	blt.s	.End						; If not, branch
-	move.w	#$280,obj.x_speed(a6)				; Cap speed
+	neg.w	d1						; Are we moving fast enough?
+	cmp.w	obj.x_speed(a6),d1
+	bge.s	.End						; If not, branch
+	move.w	d1,obj.x_speed(a6)				; Cap speed
 	
 .End:
 	rts
+
+; ------------------------------------------------------------------------------
+
+.Accels:
+	dc.w	$20, $20, $1D, $1A, $18, $16, $14, $12, $10
+
+.MaxSpeeds:
+	dc.w	-$300, -$300, -$2E0, -$2D0, -$2C0, -$2B0, -$2A0, -$290, -$280
+
+; ------------------------------------------------------------------------------
+; Apply gravity
+; ------------------------------------------------------------------------------
+
+ApplyGravity:
+	moveq	#0,d0						; Apply gravity
+	move.b	toad.hit_count(a6),d0
+	add.w	d0,d0
+	move.w	.Gravities(pc,d0.w),d0
+	add.w	d0,obj.y_speed(a6)
+	rts
+
+.Gravities:
+	dc.w	$3C, $3C, $3B, $3A, $3A, $39, $39, $38, $38
 
 ; ------------------------------------------------------------------------------
 ; Update sprite

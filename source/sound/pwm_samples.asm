@@ -40,7 +40,6 @@ PWM_DATA macro sample, file
 ; ------------------------------------------------------------------------------
 
 MarsPwmIndex:
-	PWM_ENTRY Pwm_Silence,		-1, $800		; $00
 	PWM_ENTRY Pwm_Kick,		-1, $800		; $01
 	PWM_ENTRY Pwm_Snare,		-1, $800		; $02
 	PWM_ENTRY Pwm_Timpani,		-1, $5FE		; $03
@@ -80,15 +79,13 @@ MarsPwmIndex:
 	PWM_ENTRY Pwm_Crash,		-1, $800		; $25
 	PWM_ENTRY Pwm_GoodEnding,	 0, $800		; $26
 	PWM_ENTRY Pwm_CultScream,	-1, $800		; $27
+	PWM_ENTRY Pwm_ToadHurt,		-1, $800		; $28
+	PWM_ENTRY Pwm_AoOni,		 0, $800		; $29
 MarsPwmIndexEnd:
 
 ; ------------------------------------------------------------------------------
 ; PWM samples (section 1)
 ; ------------------------------------------------------------------------------
-
-Pwm_Silence:
-	dcb.b	$40, $80
-Pwm_Silence_End:
 
 	PWM_DATA Pwm_Kick,		"source/sound/pwm/kick.wav"
 	PWM_DATA Pwm_Snare,		"source/sound/pwm/snare.wav"
@@ -131,5 +128,7 @@ Pwm_Silence_End:
 	PWM_DATA Pwm_Crash,		"source/sound/pwm/crash.wav"
 	PWM_DATA Pwm_GoodEnding,	"source/sound/pwm/good_ending.wav"
 	PWM_DATA Pwm_CultScream,	"source/sound/pwm/cult_scream.wav"
+	PWM_DATA Pwm_ToadHurt,		"source/sound/pwm/toad_hurt.wav"
+	PWM_DATA Pwm_AoOni,		"source/sound/pwm/ao_oni.wav"
 
 ; ------------------------------------------------------------------------------

@@ -28,6 +28,7 @@ StartRpgStageScene:
 	jsr	DisableAtGamesSound				; Disable AtGames sound mode
 	jsr	WaitSoundCommand
 
+RestartAoiOniChase:
 	lea	Song_Drone,a0					; Play droning sound
 	jsr	PlayMusic
 
@@ -205,7 +206,7 @@ StartUpdateLoop:
 	move.w	#$FF00,MARS_COMM_10+MARS_SYS			; Stop crash sound
 
 	CLEAR_EVENT EVENT_HOSPITAL_HALLWAY			; Clear hospital hallway event flag
-	bra.w	RestartRpgStageScene				; Restart stage
+	bra.w	RestartAoiOniChase				; Restart stage
 
 .NoAoOni:
 	tst.b	silent_hill_cutscene				; Should we go to the Silent Hill cutscene?
@@ -321,6 +322,8 @@ EntryRooms:
 ; ------------------------------------------------------------------------------
 
 UpdateFrame:
+	jsr	HandleAoOniMusic				; Handle Ao Oni music
+	
 	jsr	SpawnMapObjects					; Spawn map objects
 	jsr	UpdateObjects					; Update objects
 	

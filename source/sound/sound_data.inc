@@ -36,6 +36,7 @@
 	global Sfx_Damage
 	global Sfx_Spikes
 	global Sfx_Rumble
+	global Sfx_Wiggle
 	global Sfx_Warp
 
 ; ------------------------------------------------------------------------------

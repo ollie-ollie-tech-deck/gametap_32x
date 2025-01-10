@@ -6,6 +6,7 @@
 ; ------------------------------------------------------------------------------
 
 	global ObjSonicPlayer
+	global SetSonicPlayerRoll
 	global SetSonicPlayerAirborne
 	global HurtSonicPlayer
 	global KillSonicPlayer
@@ -44,6 +45,8 @@ player.ride_object	rs.w 1					; Object being ridden on
 player.ride_width	rs.w 1					; Object ride width
 player.collision_layer	rs.b 1					; Collision layer
 player.recover_timer	rs.b 1					; Recovery timer
+player.spin_tunnel	rs.b 1					; Spin tunnel flag
+			rs.b 1
 player.struct_len	rs.b 0					; Length of structure
 
 ; ------------------------------------------------------------------------------

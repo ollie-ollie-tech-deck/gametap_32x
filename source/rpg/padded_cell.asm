@@ -11,6 +11,9 @@
 ; ------------------------------------------------------------------------------
 
 PaddedCellCutscene:
+	lea	Song_Promise,a0					; Play music
+	jsr	PlayMusic
+
 	lea	Pal_PaddedCell,a0				; Load palette
 	moveq	#0,d0
 	moveq	#16,d1

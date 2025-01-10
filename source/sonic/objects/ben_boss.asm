@@ -28,7 +28,7 @@ ObjBenBoss:
 	move.w	#262,obj.x(a6)					; Set position
 	move.w	#120,obj.y(a6)
 	
-	move.b	#8,ben_boss.hit_count(a6)			; Set hit count
+	move.b	#6,ben_boss.hit_count(a6)			; Set hit count
 	move.b	#3,ben_boss.attack_count(a6)			; Set attack count
 	
 	bsr.w	SpawnObject					; Spawn hurt box
@@ -44,10 +44,8 @@ ObjBenBoss:
 	moveq	#0,d0
 	jsr	SetAnimation
 
-	bsr.w	SetVeinSpawnX					; Set vein spawn X position
-
 	move.l	#EarthquakeState,obj.update(a6)			; Set earthquake state
-	move.w	#60+60,ben_boss.timer(a6)
+	move.w	#60+75,ben_boss.timer(a6)
 	move.l	#Draw,obj.draw(a6)				; Set draw routine
 
 ; ------------------------------------------------------------------------------
@@ -61,14 +59,79 @@ EarthquakeState:
 
 .NotHit:
 	bsr.w	AttackPlayerNearby				; Attack the player if nearby
-	
 	bsr.w	HandleEarthquake				; Handle earthquake
+
+	lea	.StopTimes(pc),a1				; Should the vein move?
+	moveq	#0,d1
+	move.b	ben_boss.hit_count(a6),d1
+	add.w	d1,d1
+	move.w	(a1,d1.w),d1
+	cmp.w	ben_boss.timer(a6),d1
+	bgt.s	.Earthquake					; If not, branch
+
+	movea.w	player_object,a1				; Get player
+
+	cmpi.w	#60,ben_boss.timer(a6)				; Is the arrow visible?
+	ble.s	.GradualMove					; If so, branch
+
+	move.w	obj.x(a1),ben_boss.vein_x(a6)			; Snap vein to player's position
+	clr.w	ben_boss.vein_x+2(a6)
+	bra.s	.Draw
+
+.GradualMove:
+	move.w	obj.x(a1),d0					; Get speed to move vein towards player
+	sub.w	ben_boss.vein_x(a6),d0
+	ext.l	d0
+	asl.l	#8,d0
+	asl.l	#3,d0
+	move.l	d0,d1
+	add.l	d0,d0
+	add.l	d1,d0
+
+	moveq	#0,d1						; Get max speed
+	move.b	ben_boss.hit_count(a6),d1
+	add.w	d1,d1
+	add.w	d1,d1
+	move.l	.MaxSpeeds(pc,d1.w),d1
+
+	cmp.l	d1,d0						; Is it too large for moving left?
+	bge.s	.CheckRightMax					; If not, branch
+	move.l	d1,d0						; Cap the speed
+
+.CheckRightMax:
+	neg.l	d1						; Is it too large for moving right?
+	cmp.l	d1,d0
+	ble.s	.MoveVein					; If not, branch
+	move.l	d1,d0						; Cap the speed
+
+.MoveVein:
+	add.l	d0,ben_boss.vein_x(a6)				; Apply speed to vein position
+
+	cmpi.w	#32,ben_boss.vein_x(a6)				; Is the vein at the far left side?
+	bge.s	.CheckRight					; If not, branch
+	move.w	#32,ben_boss.vein_x(a6)				; Stop moving vein
+
+.CheckRight:
+	cmpi.w	#176,ben_boss.vein_x(a6)			; Is the vein at the far right side?
+	ble.s	.Earthquake					; If not, branch
+	move.w	#176,ben_boss.vein_x(a6)			; Stop moving vein
+
+.Earthquake:
 	tst.w	ben_boss.timer(a6)				; Are we done with the earthquake?
 	beq.s	.SpawnVein					; If so, branch
-	
+
+.Draw:
 	lea	obj.anim(a6),a0					; Animate sprite
 	jsr	UpdateAnimation
 	bra.w	DrawObject					; Draw sprite
+
+; ------------------------------------------------------------------------------
+
+.StopTimes:
+	dc.w	10, 10, 14, 18, 22, 26, 30
+
+.MaxSpeeds:
+	dc.l	-$4C000, -$4C000, -$40000, -$34000, -$28000, -$1C000, -$10000
 
 ; ------------------------------------------------------------------------------
 
@@ -115,10 +178,8 @@ WaitVeinState:
 	subq.b	#1,ben_boss.attack_count(a6)			; Decrement attack count
 	beq.s	.NextPhase					; If there's no more attacks to do, branch
 	
-	bsr.w	SetVeinSpawnX					; Set vein spawn X position
-
 	move.l	#EarthquakeState,obj.update(a6)			; Set earthquake state
-	move.w	#60+60,ben_boss.timer(a6)
+	move.w	#60+75,ben_boss.timer(a6)
 	bra.s	.Draw
 
 .NextPhase:
@@ -198,11 +259,9 @@ WaitStuckVeinState:
 	movea.w	ben_boss.hurt_box(a6),a1			; Enable hurt box
 	clr.b	obj.flags+1(a1)
 
-	bsr.w	SetVeinSpawnX					; Set vein spawn X position
-
 	move.b	#3,ben_boss.attack_count(a6)			; Reset attack count
 	move.l	#EarthquakeState,obj.update(a6)			; Set earthquake state
-	move.w	#60+60,ben_boss.timer(a6)
+	move.w	#60+75,ben_boss.timer(a6)
 
 .Draw:
 	lea	obj.anim(a6),a0					; Animate sprite
@@ -361,22 +420,6 @@ PlayerSawState:
 	rts
 
 ; ------------------------------------------------------------------------------
-; Set vein spawn X position
-; ------------------------------------------------------------------------------
-
-SetVeinSpawnX:
-	bsr.w	Random						; Get random X position
-	andi.w	#$FF,d0
-	cmpi.w	#156,d0
-	bcs.s	.SetVeinX
-	subi.w	#156,d0
-	
-.SetVeinX:
-	addi.w	#16+16,d0					; Set vein spawn X position
-	move.w	d0,ben_boss.vein_x(a6)
-	rts
-
-; ------------------------------------------------------------------------------
 ; Handle earthquake
 ; ------------------------------------------------------------------------------
 
@@ -386,7 +429,7 @@ HandleEarthquake:
 	subq.w	#1,ben_boss.timer(a6)				; Decrement timer
 	beq.s	.Done						; If it has run out, branch
 
-	cmpi.w	#60,ben_boss.timer(a6)				; Should we perform the shake?
+	cmpi.w	#75,ben_boss.timer(a6)				; Should we perform the shake?
 	beq.s	.PlaySound					; If so, branch
 	bgt.s	.End						; If not, branch
 	bra.s	.CheckOffset
@@ -498,7 +541,7 @@ Draw:
 	cmpi.l	#EarthquakeState,obj.update(a6)			; Is there an earthquake?
 	bne.s	.Draw						; If not, branch
 
-	cmpi.w	#45,ben_boss.timer(a6)				; Should we draw the arrow?
+	cmpi.w	#60,ben_boss.timer(a6)				; Should we draw the arrow?
 	bgt.s	.Draw						; If not, branch
 
 	move.b	#3,(a0)+					; Draw arrow
@@ -680,8 +723,14 @@ StuckVeinWiggleState:
 	beq.s	.CheckMoveOut					; If it has run out, branch
 
 	cmpi.w	#30,vein.timer(a6)				; Should we perform the wiggle?
-	bge.s	.Draw						; If not, branch
-	btst	#0,vein.timer+1(a6)
+	blt.s	.DoWiggle					; If so, branch
+	bne.s	.Draw						; If not, branch
+
+	lea	Sfx_Wiggle,a0					; Play wiggle sound
+	jsr	PlaySfx
+
+.DoWiggle:
+	btst	#0,vein.timer+1(a6)				; Should we apply the wiggle offset?
 	bne.s	.Draw						; If not, branch
 	
 	eori.w	#2,obj.x(a6)					; Wiggle
@@ -699,6 +748,9 @@ StuckVeinWiggleState:
 	bra.s	.Draw
 
 .MoveOut:
+	lea	Sfx_Thump,a0					; Play thump sound
+	jsr	PlaySfx
+
 	move.l	#StuckVeinMoveOutState,obj.update(a6)		; Start moving out
 	move.w	#30,ben_boss.timer(a6)
 	bsr.w	DrawObject

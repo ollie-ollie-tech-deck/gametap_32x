@@ -35,7 +35,7 @@ WaitPlayerState:
 
 	move.w	a6,-(sp)					; Is the active Ao Oni object on screen?
 	movea.w	a1,a6
-	bsr.s	CheckOnScreen
+	bsr.w	CheckOnScreen
 	movea.w	(sp)+,a6
 	beq.s	.Despawn					; If so, branch
 
@@ -412,5 +412,63 @@ Anim_AoOni:
 	ANIM_START $30, ANIM_RESTART
 	dc.w	7, 6, 8, 6
 	ANIM_END
+
+; ------------------------------------------------------------------------------
+; Handle chase music
+; ------------------------------------------------------------------------------
+
+HandleAoOniMusic:
+	cmpi.b	#9,rpg_room_id					; Are we in the hospital hallway?
+	bne.s	.End						; If not, branch
+	CHECK_EVENT EVENT_HOSPITAL_HALLWAY			; Has the player ran into the hallway?
+	beq.s	.End						; If not, branch
+
+	move.w	ao_oni_object,d0				; Is there an active Ao Oni object?
+	beq.s	.End						; If not, branch
+	movea.w	d0,a6						; Get active Ao Oni object
+	
+	move.w	obj.y(a6),d0					; Are they off screen at the top?
+	addi.w	#16+32,d0
+	cmp.w	camera_fg_y,d0
+	blt.s	.OffScreen					; If so, branch
+
+	move.w	obj.y(a6),d0					; Are they off screen at the bottom?
+	subi.w	#96+32,d0
+	move.w	camera_fg_y,d1
+	addi.w	#224,d1
+	cmp.w	d1,d0
+	bgt.s	.OffScreen					; If so, branch
+	
+	move.w	obj.x(a6),d0					; Are they off screen at the left?
+	addi.w	#24+32,d0
+	cmp.w	camera_fg_x,d0
+	blt.s	.OffScreen					; If so, branch
+
+	move.w	obj.x(a6),d0					; Are they off screen at the right?
+	subi.w	#24+32,d0
+	move.w	camera_fg_x,d1
+	addi.w	#320,d1
+	cmp.w	d1,d0
+	bgt.s	.OffScreen					; If so, branch
+	
+	tst.b	ao_oni_chase_music				; Is the timer already set?
+	bne.s	.ResetTimer					; If so, branch
+
+	move.w	#$FF29,MARS_COMM_10+MARS_SYS			; Play chase music
+
+.ResetTimer:
+	move.b	#150,ao_oni_chase_music				; Set timer
+	rts
+
+.OffScreen:
+	tst.b	ao_oni_chase_music				; Is the timer active?
+	beq.s	.End						; If not, branch
+	subq.b	#1,ao_oni_chase_music				; Decrement timer
+	bne.s	.End						; If it hasn't run out, branch
+
+	move.w	#$FF00,MARS_COMM_10+MARS_SYS			; Stop chase music
+
+.End:
+	rts
 
 ; ------------------------------------------------------------------------------

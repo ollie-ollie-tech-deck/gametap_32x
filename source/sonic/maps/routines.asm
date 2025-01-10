@@ -202,6 +202,7 @@ Scroll_RingGirlBoss:
 ; ------------------------------------------------------------------------------
 
 Init_BenDrowned:
+Init_BenDrownedBoss:
 	clr.l	camera_bg_x					; Set background camera position
 	clr.l	camera_bg_y
 
@@ -213,6 +214,13 @@ Init_BenDrowned:
 	addi.w	#$30,d0
 	neg.w	d0
 	move.w	d0,ben_bg_pal_target
+	
+	cmpi.b	#3,sonic_stage_id				; Spawn boss if in boss stage
+	bne.s	.NoBoss
+	jsr	SpawnObject
+	move.l	#ObjBenBoss,obj.update(a1)
+
+.NoBoss:
 	rts
 
 ; ------------------------------------------------------------------------------
@@ -220,6 +228,7 @@ Init_BenDrowned:
 ; ------------------------------------------------------------------------------
 
 Draw_BenDrowned:
+Draw_BenDrownedBoss:
 	tst.w	ben_appear					; Is Ben appearing?
 	bne.s	.DrawBgSprites					; If not, branch
 
@@ -270,7 +279,14 @@ Draw_BenDrowned:
 	clr.b	-(sp)
 	clr.b	-(sp)
 	move.w	#160,-(sp)
-	move.w	#112,-(sp)
+	moveq	#112,d0
+	cmpi.b	#3,sonic_stage_id
+	bne.s	.SetBgSpriteY
+	moveq	#96,d0
+
+.SetBgSpriteY:
+	sub.w	camera_bg_y_shake,d0
+	move.w	d0,-(sp)
 	move.w	#$100,-(sp)
 	move.w	#$100,-(sp)
 	jsr	DrawLoadedMarsSprite
@@ -328,28 +344,6 @@ Scroll_BenDrowned:
 	add.w	d2,(a1)+					; Set background value
 	addq.w	#2,a1						; Skip foreground value
 	dbf	d0,.DeformLoop					; Loop until finished
-	rts
-
-; ------------------------------------------------------------------------------
-; Ben Drowned boss initialization event
-; ------------------------------------------------------------------------------
-
-Init_BenDrownedBoss:
-	clr.l	camera_bg_x					; Set background camera position
-	clr.l	camera_bg_y
-
-	move.b	#%11,map_fg_flags				; Initialize map drawing
-	clr.b	map_bg_flags
-	
-	jsr	SpawnObject					; Spawn boss
-	move.l	#ObjBenBoss,obj.update(a1)
-	rts
-
-; ------------------------------------------------------------------------------
-; Ben Drowned boss draw event
-; ------------------------------------------------------------------------------
-
-Draw_BenDrownedBoss:
 	rts
 
 ; ------------------------------------------------------------------------------

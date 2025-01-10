@@ -56,10 +56,6 @@ Song_Godlike:
 	include	"source/sound/music/godlike.asm"
 	even
 
-; ------------------------------------------------------------------------------
-; SFX
-; ------------------------------------------------------------------------------
-
 	section m68k_rom_sound_1
 Song_OneHundredYears:
 	include	"source/sound/music/one_hundred_years.asm"
@@ -67,6 +63,11 @@ Song_OneHundredYears:
 Song_Promise:
 	include	"source/sound/music/promise.asm"
 	even
+
+; ------------------------------------------------------------------------------
+; SFX
+; ------------------------------------------------------------------------------
+
 Sfx_Jump:
 	include	"source/sound/sfx/jump.asm"
 	even
@@ -111,6 +112,9 @@ Sfx_Spikes:
 	even
 Sfx_Rumble:
 	include	"source/sound/sfx/rumble.asm"
+	even
+Sfx_Wiggle:
+	include	"source/sound/sfx/wiggle.asm"
 	even
 Sfx_Warp:
 	include	"source/sound/sfx/warp.asm"

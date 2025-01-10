@@ -41,10 +41,10 @@ SonicStageScene:
 	clr.b	-(sp)
 	bsr.w	LoadMarsPalette
 
-	lea	Art_Health,a1					; Load health meter
-	move.w	#$A800,d2
-	jsr	QueueKosmData
-	jsr	FlushKosmQueue
+	pea	MarsSpr_SonicHealth				; Load health 32X sprites
+	move.b	#$FF,-(sp)
+	move.b	#2,-(sp)
+	bsr.w	LoadMarsSprites
 
 	lea	SonicMapData,a0					; Load map data
 	moveq	#0,d0
@@ -265,20 +265,19 @@ DrawFrame:
 	
 	bsr.w	StartSpriteDraw					; Start drawing sprites
 
-	pea	Spr_Health					; Draw health meter
-	moveq	#0,d0
-	move.b	player_health,d0
-	move.w	d0,-(sp)
-	move.w	#$8540,-(sp)
-	clr.b	-(sp)
-	move.w	#296,-(sp)
-	move.w	#24,-(sp)
-	jsr	DrawSprite
-
 	jsr	MapDrawEvent					; Run map draw event
 	bsr.w	DrawObjects					; Draw objects
 	bsr.w	DrawCollapsePieces				; Draw collapsing pieces
 	bsr.w	DrawYugiohCards					; Draw Yu-Gi-Oh cards
+
+	st	-(sp)						; Draw health sprite
+	move.b	player_health,-(sp)
+	clr.b	-(sp)
+	move.w	#261,-(sp)
+	move.w	#24,-(sp)
+	move.w	#$100,-(sp)
+	move.w	#$100,-(sp)
+	bsr.w	DrawLoadedMarsSprite
 	
 	bsr.w	FinishSpriteDraw				; Finish drawing sprites
 
@@ -375,5 +374,6 @@ ObjectIndex:
 	dc.l	ObjEyeball
 	dc.l	ObjBlockbuster
 	dc.l	ObjButton
+	dc.l	ObjSpinTunnel
 
 ; ------------------------------------------------------------------------------

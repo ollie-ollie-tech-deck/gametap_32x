@@ -512,6 +512,7 @@ ArtList_BenDrownedBoss:
 MarsSprList_BenDrownedBoss:
 	MARS_SPR_LIST_START
 	MARS_SPR_LIST_ENTRY MarsSpr_BenBossSprites, 0, 1
+	MARS_SPR_LIST_ENTRY MarsSpr_BenBackground, $E, $C0
 	MARS_SPR_LIST_END
 
 MarsPalList_BenDrownedBoss:

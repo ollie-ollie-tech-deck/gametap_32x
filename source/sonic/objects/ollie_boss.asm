@@ -19,6 +19,7 @@ ObjOllieBoss:
 	move.w	#64,obj.draw_height(a6)
 
 	move.b	#8,ollie_boss.hit_count(a6)			; Set hit count
+	st	ollie_boss.prev_button(a6)			; Reset previous button
 
 	move.l	#Draw,obj.draw(a6)				; Set draw routine
 
@@ -50,7 +51,7 @@ StartButtonPick:
 ; ------------------------------------------------------------------------------
 
 .Timers:
-	dc.w	1, (2*60)+5, (2*60)+30, (2*60)+55, (3*60)+20, (3*60)+45, (4*60)+10, (4*60)+35, 5*60
+	dc.w	1, (2*60)+30, 3*60, (3*60)+20, (3*60)+40, 4*60, (4*60)+20, (4*60)+40, 5*60
 
 ; ------------------------------------------------------------------------------
 ; Pick button state
@@ -61,15 +62,16 @@ PickButtonState:
 	addi.w	#48,d0
 	move.w	d0,obj.y(a6)
 
+	moveq	#0,d2						; Get pick speed
+	move.b	ollie_boss.hit_count(a6),d2
+	add.w	d2,d2
+	move.w	.Speeds(pc,d2.w),d2
+
 	moveq	#0,d0						; Get timer
 	move.w	ollie_boss.timer(a6),d0
 	beq.s	.Press						; If we should press the button, branch
 
-	moveq	#0,d1						; Should we pick a button?
-	move.b	ollie_boss.hit_count(a6),d1
-	add.w	d1,d1
-	move.w	.Speeds(pc,d1.w),d1
-	divu.w	d1,d0
+	divu.w	d2,d0						; Should we pick a button?
 	swap	d0
 	tst.w	d0
 	bne.s	.NoPick						; If not, branch
@@ -85,11 +87,23 @@ PickButtonState:
 
 .NoPick:
 	subq.w	#1,ollie_boss.timer(a6)				; Decrement timer
+
+.Draw:
 	jmp	DrawObject					; Draw sprite
 
 ; ------------------------------------------------------------------------------
 
 .Press:
+	move.b	ollie_boss.button(a6),d0			; Did we choose the same button as last time?
+	cmp.b	ollie_boss.prev_button(a6),d0
+	bne.s	.StartFlash					; If not, branch
+
+	move.w	d2,ollie_boss.timer(a6)				; Pick another button
+	bra.s	.Draw
+
+.StartFlash:
+	move.b	d0,ollie_boss.prev_button(a6)			; Set previous button
+
 	move.l	#FlashState,obj.update(a6)			; Start flashing
 	move.w	#64,ollie_boss.timer(a6)
 	bra.s	FlashState
@@ -97,7 +111,7 @@ PickButtonState:
 ; ------------------------------------------------------------------------------
 
 .Speeds:
-	dc.w	1, 25, 30, 35, 40, 45, 50, 55, 60
+	dc.w	1, 30, 35, 40, 44, 58, 52, 56, 60
 
 ; ------------------------------------------------------------------------------
 ; Flash state

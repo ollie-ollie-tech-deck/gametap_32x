@@ -13,6 +13,8 @@
 ; ------------------------------------------------------------------------------
 
 Main:
+	jsr	StopSound					; Stop sound
+
 	.c: = 0							; Clear event flags
 	rept EVENT_BYTES/4
 		clr.l	event_flags+.c

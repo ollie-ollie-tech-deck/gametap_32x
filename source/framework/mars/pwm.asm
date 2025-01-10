@@ -31,11 +31,11 @@ pwm.struct_len		rs.b	0				; Size of structure
 ; ------------------------------------------------------------------------------
 
 PWM_CHANNEL macro
-	dc.l	0						; Address
-	dc.l	1						; Length
+	dc.l	Pwm_Silence					; Address
+	dc.l	Pwm_Silence_End-Pwm_Silence			; Length
 	dc.l	0						; Loop point
 	dc.l	0						; Loop length
-	dc.l	1						; Samples left
+	dc.l	Pwm_Silence_End-Pwm_Silence			; Samples left
 	dc.l	$10						; Left panning
 	dc.l	$10						; Right panning
 	dc.l	$800						; Pitch
@@ -208,16 +208,18 @@ MixPwmChannel:
 	exts.b	r2,r0						; Get sample ID
 	cmp/pz	r0						; Are we just changing the panning?
 	bf	.SetPanning					; If so, branch
+	
+	mov.l	#PwmSilenceMetadata,r1				; Silence sample metadata
 
-	mov.b	#(MarsPwmIndexEnd-MarsPwmIndex)/16,r1		; Is this a valid sample ID?
-	cmp/ge	r1,r0
-	bt	.NoReset					; If not, branch
+	tst	r0,r0						; Are we playing the silence sample?
+	bt	.GotSampleMetadata				; If so, branch
 
-	mov.l	#MarsPwmIndex,r1				; Get sample metadata
+	mov.l	#MarsPwmIndex-16,r1				; Get sample metadata
 	shll2	r0
 	shll2	r0
 	add	r0,r1
 
+.GotSampleMetadata:
 	mov.l	@r1+,r0						; Set sample address
 	mov.l	r0,@(pwm.addr,r14)
 	mov.l	r0,r3
@@ -333,6 +335,22 @@ MixPwmChannel:
 	add	r0,r5
 
 	lits
+
+; ------------------------------------------------------------------------------
+; Silence
+; ------------------------------------------------------------------------------
+
+	cnop 0,4
+
+PwmSilenceMetadata:
+	dc.l	Pwm_Silence
+	dc.l	Pwm_Silence_End-Pwm_Silence
+	dc.l	0
+	dc.l	$800
+
+Pwm_Silence:
+	dcb.b	$40, $80
+Pwm_Silence_End:
 
 ; ------------------------------------------------------------------------------
 ; Variables
