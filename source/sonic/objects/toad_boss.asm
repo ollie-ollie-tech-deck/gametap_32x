@@ -172,8 +172,6 @@ TripState:
 	
 	lea	Sfx_HitBoss,a0					; Play hit boss sound
 	jsr	PlaySfx
-	
-	move.w	#$FF28,MARS_COMM_12+MARS_SYS			; Play hurt sound
 
 	subq.b	#1,toad.hit_count(a6)				; Decrement hit count
 	bne.s	.GotHit						; If we haven't been defeated, branch
@@ -182,6 +180,8 @@ TripState:
 	bra.w	DefeatedState
 
 .GotHit:
+	move.w	#$FF28,MARS_COMM_12+MARS_SYS			; Play hurt sound
+
 	move.l	#HitState,obj.update(a6)			; Set hit state
 	move.w	#60,toad.timer(a6)
 	bra.w	HitState
