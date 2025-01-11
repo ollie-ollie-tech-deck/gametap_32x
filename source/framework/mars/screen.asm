@@ -37,7 +37,7 @@ InitScreen:
 
 .ClearOther:
 	mov.b	@(FRAME_CTRL,r8),r0				; Swap and clear frame buffer
-	xor	#1,r0
+	xor	#BIT_FS,r0
 	bsr	ClearFrameBuffer
 	mov.b	r0,@(FRAME_CTRL,r8)
 	jsr	@r1						; Initialize line table
