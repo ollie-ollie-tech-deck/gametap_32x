@@ -734,7 +734,7 @@ loc_6004760:
 
 loc_6004770:
 	mov.b	@(FRAME_CTRL,gbr),r0
-	tst	#2,r0
+	tst	#BIT_FEN,r0
 	bf	loc_6004770
 	mov.l	r1,r0
 	mov.w	r0,@(FILL_LENGTH,gbr)
@@ -751,7 +751,7 @@ loc_6004784:
 
 loc_6004786:
 	mov.b	@(FRAME_CTRL,gbr),r0
-	tst	#2,r0
+	tst	#BIT_FEN,r0
 	bf	loc_6004786
 	tst	r1,r1
 	bt/s	locret_6004794
@@ -771,7 +771,7 @@ loc_6004798:
 
 loc_600479E:
 	mov.b	@(FRAME_CTRL,gbr),r0
-	tst	#2,r0
+	tst	#BIT_FEN,r0
 	bf	loc_600479E
 	mov.l	r1,r0
 	mov.w	r0,@(FILL_LENGTH,gbr)
@@ -794,7 +794,7 @@ loc_60047B8:
 
 loc_60047C0:
 	mov.b	@(FRAME_CTRL,gbr),r0
-	tst	#2,r0
+	tst	#BIT_FEN,r0
 	bf	loc_60047C0
 	rts
 	mov.b	r13,@r10
@@ -803,7 +803,7 @@ loc_60047C0:
 
 loc_60047CA:
 	mov.b	@(FRAME_CTRL,gbr),r0
-	tst	#2,r0
+	tst	#BIT_FEN,r0
 	bf	loc_60047CA
 	dt	r1
 	bt/s	locret_60047D8
@@ -825,7 +825,7 @@ loc_60047DC:
 
 loc_60047E6:
 	mov.b	@(FRAME_CTRL,gbr),r0
-	tst	#2,r0
+	tst	#BIT_FEN,r0
 	bf	loc_60047E6
 	mov.l	r1,r0
 	mov.w	r0,@(FILL_LENGTH,gbr)
@@ -844,7 +844,7 @@ loc_60047FE:
 
 loc_6004800:
 	mov.b	@(FRAME_CTRL,gbr),r0
-	tst	#2,r0
+	tst	#BIT_FEN,r0
 	bf	loc_6004800
 	tst	r1,r1
 	bt/s	locret_6004814
@@ -867,7 +867,7 @@ loc_6004818:
 
 loc_600481E:
 	mov.b	@(FRAME_CTRL,gbr),r0
-	tst	#2,r0
+	tst	#BIT_FEN,r0
 	bf	loc_600481E
 	mov.l	r1,r0
 	mov.w	r0,@(FILL_LENGTH,gbr)
@@ -890,7 +890,7 @@ loc_600483C:
 
 loc_6004840:
 	mov.b	@(FRAME_CTRL,gbr),r0
-	tst	#2,r0
+	tst	#BIT_FEN,r0
 	bf	loc_6004840
 	tst	r1,r1
 	bt/s	locret_6004854
@@ -1324,9 +1324,9 @@ DrawShape_Wireframe:
 	mov.w	@r0+,r3
 
 loc_6004AD2:
-	mov.l	#SYS_REGS+FRAME_CTRL,r0
+	mov.l	#VDP_REGS+FRAME_CTRL,r0
 	mov.b	@r0,r0
-	tst	#2,r0
+	tst	#BIT_FEN,r0
 	bf	loc_6004AD2
 
 loc_6004ADA:
