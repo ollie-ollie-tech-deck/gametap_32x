@@ -236,23 +236,18 @@ cFM6			equ $06					; Only in S3/S&K/S3D, overrides DAC
 ; Conversion macros
 ; ------------------------------------------------------------------------------
 
-conv0To256 macro n
-	__conv0To256_result: = ((((\n)=0)&1)<<8)|(\n)
-	endm
-
-s2TempotoS3 macro n
-	__s2TempotoS3_result: = ($100-((((\n)=0)&1)|(\n)))&$FF
-	endm
-
-s1TempotoS2 macro n
-	conv0To256 \n
-	__s1TempotoS2_result: = ((((__conv0To256_result-1)<<8)+(__conv0To256_result>>1))/__conv0To256_result)&$FF
+s2TempotoS1 macro n
+	__s2TempotoS1_result: = (((768-(\n))>>1)/(256-(\n)))&$FF
 	endm
 	
-s1TempotoS3 macro n
-	s1TempotoS2 \n
-	s2TempotoS3 __s1TempotoS2_result
-	__s1TempotoS3_result: = __s2TempotoS3_result
+s3TempotoS2 macro n
+	__s3TempotoS2_result: = ($100-((((\n)=0)&1)|(\n)))&$FF
+	endm
+	
+s3TempotoS1 macro n
+	s3TempotoS2 \n
+	s2TempotoS1 __s3TempotoS2_result
+	__s3TempotoS1_result: = __s2TempotoS1_result
 	endm
 	
 convertMainTempoMod macro mod
