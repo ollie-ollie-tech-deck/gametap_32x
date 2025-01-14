@@ -236,6 +236,10 @@ cFM6			equ $06					; Only in S3/S&K/S3D, overrides DAC
 ; Conversion macros
 ; ------------------------------------------------------------------------------
 
+conv0To256 macro n
+	__conv0To256_result: = ((((\n)=0)&1)<<8)|(\n)
+	endm
+
 s2TempotoS1 macro n
 	__s2TempotoS1_result: = (((768-(\n))>>1)/(256-(\n)))&$FF
 	endm
