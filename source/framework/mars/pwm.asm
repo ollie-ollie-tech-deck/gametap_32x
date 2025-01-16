@@ -49,27 +49,27 @@ PWM_CHANNEL macro
 ;------------------------------------------------------------------------------
 
 InitPwmDriver:
-	mov.l	#%10101010101010101010101010101010,r0		; Initialize update sequence
-	mov.l	#pwm_update_sequence,r1
-	mov.l	r0,@r1
-
 	mov.l	#SYS_REGS+PWM_TIMER,r0				; Set interrupt interval and panning
-	mov.w	#%0000000100000101,r1
+	mov.w	#%0000001000000101,r1
 	mov.w	r1,@r0
 	
 	mov.l	#SYS_REGS+PWM_CYCLE,r0				; Set PWM cycle
-	mov.w	#1047,r1
+	if REFRESH_RATE=60
+		mov.w	#1045,r1
+	else
+		mov.w	#1035,r1
+	endif
 	mov.w	r1,@r0
 
-	mov.l	#SYS_REGS+PWM_LEFT,r6				; Fill PWM FIFO
-	mov.l	#SYS_REGS+PWM_RIGHT,r7
+	mov.l	#SYS_REGS+PWM_LEFT,r1				; Fill PWM FIFO
 	xor	r0,r0
-	mov.w	r0,@r6
-	mov.w	r0,@r6
-	mov.w	r0,@r6
-	mov.w	r0,@r7
-	mov.w	r0,@r7
-	mov.w	r0,@r7
+	mov.w	r0,@r1
+	mov.w	r0,@r1
+	mov.w	r0,@r1
+	mov.l	#SYS_REGS+PWM_RIGHT,r1
+	mov.w	r0,@r1
+	mov.w	r0,@r1
+	mov.w	r0,@r1
 
 	rts
 	nop
@@ -81,12 +81,6 @@ InitPwmDriver:
 ;------------------------------------------------------------------------------
 
 UpdatePwmDriver:
-	mov.l	#pwm_update_sequence,r1				; Update sequence
-	mov.l	@r1,r0
-	rotr	r0
-	bf/s	PwmDriverDone					; If we should not update on this interrupt, branch
-	mov.l	r0,@r1
-
 	mov.l	r2,@-r15					; Save registers
 	mov.l	r3,@-r15
 	mov.l	r6,@-r15
@@ -140,34 +134,24 @@ UpdatePwmDriver:
 	
 	mov.l	#SYS_REGS+PWM_LEFT,r0				; Sample registers
 	mov.l	#SYS_REGS+PWM_RIGHT,r1
-	
-	lds.l	@r15+,macl					; Restore registers
-	lds.l	@r15+,pr
-	mov.l	@r15+,r14
-	
-	mov.w	r4,@r0						; Send sample data
+
+	mov.w	r4,@r0						; Send first set of sample data
 	mov.w	r5,@r1
-	
-	mov.l	@r15+,r5					; Restore registers
-	mov.l	@r15+,r4
 
 .WaitPwmFifo:
 	mov.w	@r0,r2						; Is the FIFO full?
 	cmp/pz	r2
-	bt	.SendNextSamples				; If not, branch
+	bf	.WaitPwmFifo					; If not, branch
 
-	mov.b	#$18,r2						; Delay for a bit
-
-.Delay:
-	dt	r2
-	bf	.Delay
-	bt	.WaitPwmFifo
-
-.SendNextSamples:
-	mov.w	r6,@r0						; Send sample data
+	mov.w	r6,@r0						; Send second set of sample data
 	mov.w	r7,@r1
-
-	mov.l	@r15+,r7					; Restore registers
+	
+	lds.l	@r15+,macl					; Restore registers
+	lds.l	@r15+,pr
+	mov.l	@r15+,r14
+	mov.l	@r15+,r5
+	mov.l	@r15+,r4
+	mov.l	@r15+,r7
 	mov.l	@r15+,r6
 	mov.l	@r15+,r3
 	mov.l	@r15+,r2
@@ -342,9 +326,6 @@ MixPwmChannel:
 ; ------------------------------------------------------------------------------
 ; Variables
 ; ------------------------------------------------------------------------------
-
-pwm_update_sequence:
-	dc.l	%10101010101010101010101010101010		; Update sequence
 
 pwm_channel_1:
 	PWM_CHANNEL						; PWM1
