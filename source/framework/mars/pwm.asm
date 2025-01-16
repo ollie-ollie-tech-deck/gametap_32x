@@ -31,11 +31,11 @@ pwm.struct_len		rs.b	0				; Size of structure
 ; ------------------------------------------------------------------------------
 
 PWM_CHANNEL macro
-	dc.l	Pwm_Silence					; Address
-	dc.l	Pwm_Silence_End-Pwm_Silence			; Length
+	dc.l	0						; Address
+	dc.l	0						; Length
 	dc.l	0						; Loop point
 	dc.l	0						; Loop length
-	dc.l	Pwm_Silence_End-Pwm_Silence			; Samples left
+	dc.l	0						; Samples left
 	dc.l	$10						; Left panning
 	dc.l	$10						; Right panning
 	dc.l	$800						; Pitch
@@ -208,13 +208,8 @@ MixPwmChannel:
 	exts.b	r2,r0						; Get sample ID
 	cmp/pz	r0						; Are we just changing the panning?
 	bf	.SetPanning					; If so, branch
-	
-	mov.l	#PwmSilenceMetadata,r1				; Silence sample metadata
 
-	tst	r0,r0						; Are we playing the silence sample?
-	bt	.GotSampleMetadata				; If so, branch
-
-	mov.l	#MarsPwmIndex-16,r1				; Get sample metadata
+	mov.l	#MarsPwmIndex,r1				; Get sample metadata
 	shll2	r0
 	shll2	r0
 	add	r0,r1
@@ -254,9 +249,13 @@ MixPwmChannel:
 ; ------------------------------------------------------------------------------
 
 .NoReset:
+	mov.l	@(pwm.addr,r14),r1				; Get sample data address
+	tst	r1,r1
+	bt	.SilentSample					; If it's not set, branch
+
 	mov.l	@(pwm.pitch_counter,r14),r0			; Increment pitch counter
-	mov.l	@(pwm.pitch,r14),r1
-	add	r1,r0
+	mov.l	@(pwm.pitch,r14),r3
+	add	r3,r0
 	mov.l	r0,@(pwm.pitch_counter,r14)
 
 	mov.w	#$800,r2					; Is it time to fetch a sample?
@@ -268,9 +267,12 @@ MixPwmChannel:
 	add	r0,r4
 	add	r0,r6
 	add	r1,r5
-	rts
 	add	r1,r7
 	
+.SilentSample:
+	rts
+	nop
+
 	lits
 
 ; ------------------------------------------------------------------------------
@@ -279,7 +281,6 @@ MixPwmChannel:
 	sub	r2,r0						; Reset pitch counter
 	mov.l	r0,@(pwm.pitch_counter,r14)
 
-	mov.l	@(pwm.addr,r14),r1				; Get sample data
 	mov.l	@(pwm.samples_left,r14),r0			; Are we at the end of the sample?
 	dt	r0
 	bf	.ReadSample					; If not, branch
@@ -289,8 +290,9 @@ MixPwmChannel:
 	tst	r1,r1
 	bf	.ReadSample					; If there's one set, branch
 
-	mov.l	#Pwm_Silence_End-Pwm_Silence,r0			; Go to silence sample
-	mov.l	#Pwm_Silence,r1
+	xor	r1,r1						; Stop sample
+	rts
+	mov.l	r1,@(pwm.addr,r14)
 
 .ReadSample:
 	mov.b	@r1+,r3						; Read sample
@@ -335,28 +337,11 @@ MixPwmChannel:
 	add	r0,r5
 
 	lits
-
-; ------------------------------------------------------------------------------
-; Silence
-; ------------------------------------------------------------------------------
-
 	cnop 0,4
-
-PwmSilenceMetadata:
-	dc.l	Pwm_Silence
-	dc.l	Pwm_Silence_End-Pwm_Silence
-	dc.l	0
-	dc.l	$800
-
-Pwm_Silence:
-	dcb.b	$40, $80
-Pwm_Silence_End:
 
 ; ------------------------------------------------------------------------------
 ; Variables
 ; ------------------------------------------------------------------------------
-
-	cnop 0,4
 
 pwm_update_sequence:
 	dc.l	%10101010101010101010101010101010		; Update sequence
