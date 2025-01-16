@@ -49,30 +49,18 @@ PWM_CHANNEL macro
 ;------------------------------------------------------------------------------
 
 InitPwmDriver:
-	mov.l	#SYS_REGS+PWM_TIMER,r0				; Set interrupt interval and panning
-	mov.w	#%0000001000000101,r1
-	mov.w	r1,@r0
+	mov.l	#SYS_REGS+PWM_LEFT,r0				; Fill FIFO
+	mov.l	r1,@r0
+	mov.l	r1,@r0
+	mov.l	r1,@r0
 	
-	mov.l	#SYS_REGS+PWM_CYCLE,r0				; Set PWM cycle
-	if REFRESH_RATE=60
-		mov.w	#1045,r1
+	if REFRESH_RATE=60					; Set interrupt interval, panning, and cycle
+		mov.l	#(%0000000100000101<<16)|1045,r1
 	else
-		mov.w	#1035,r1
+		mov.l	#(%0000000100000101<<16)|1035,r1
 	endif
-	mov.w	r1,@r0
-
-	mov.l	#SYS_REGS+PWM_LEFT,r1				; Fill PWM FIFO
-	xor	r0,r0
-	mov.w	r0,@r1
-	mov.w	r0,@r1
-	mov.w	r0,@r1
-	mov.l	#SYS_REGS+PWM_RIGHT,r1
-	mov.w	r0,@r1
-	mov.w	r0,@r1
-	mov.w	r0,@r1
-
 	rts
-	nop
+	mov.l	r1,@-r0
 
 	lits
 
@@ -81,6 +69,23 @@ InitPwmDriver:
 ;------------------------------------------------------------------------------
 
 UpdatePwmDriver:
+	mov.l	#pwm_update_sequence,r0				; Update sequence
+	mov.l	@r0,r1
+	rotr	r1
+	bt/s	.AdvanceSamples					; If we should advance the samples, branch
+	mov.l	r1,@r0
+
+;------------------------------------------------------------------------------
+	
+	mov.l	#SYS_REGS+PWM_LEFT,r0				; Send second set of sample data
+	mov.l	#pwm_sample_2_l,r1
+	mov.l	@r1,r1
+	rts
+	mov.l	r1,@r0
+
+;------------------------------------------------------------------------------
+
+.AdvanceSamples:
 	mov.l	r2,@-r15					; Save registers
 	mov.l	r3,@-r15
 	mov.l	r6,@-r15
@@ -132,20 +137,14 @@ UpdatePwmDriver:
 	sub	r1,r6
 	sub	r1,r7
 	
-	mov.l	#SYS_REGS+PWM_LEFT,r0				; Sample registers
-	mov.l	#SYS_REGS+PWM_RIGHT,r1
+	mov.l	#SYS_REGS+PWM_RIGHT,r0				; Send first set of sample data
+	mov.w	r5,@r0
+	mov.w	r4,@-r0
 
-	mov.w	r4,@r0						; Send first set of sample data
-	mov.w	r5,@r1
+	mov.l	#pwm_sample_2_r,r0				; Save second set of sample data
+	mov.w	r7,@r0
+	mov.w	r6,@-r0
 
-.WaitPwmFifo:
-	mov.w	@r0,r2						; Is the FIFO full?
-	cmp/pz	r2
-	bf	.WaitPwmFifo					; If not, branch
-
-	mov.w	r6,@r0						; Send second set of sample data
-	mov.w	r7,@r1
-	
 	lds.l	@r15+,macl					; Restore registers
 	lds.l	@r15+,pr
 	mov.l	@r15+,r14
@@ -154,11 +153,8 @@ UpdatePwmDriver:
 	mov.l	@r15+,r7
 	mov.l	@r15+,r6
 	mov.l	@r15+,r3
-	mov.l	@r15+,r2
-
-PwmDriverDone:
 	rts
-	nop
+	mov.l	@r15+,r2
 
 	lits
 
@@ -326,6 +322,13 @@ MixPwmChannel:
 ; ------------------------------------------------------------------------------
 ; Variables
 ; ------------------------------------------------------------------------------
+
+pwm_update_sequence:
+	dc.l	%10101010101010101010101010101010		; Update sequence
+pwm_sample_2_l:
+	dc.w	0						; Sample 2 (left)
+pwm_sample_2_r:
+	dc.w	0						; Sample 2 (right)
 
 pwm_channel_1:
 	PWM_CHANNEL						; PWM1
