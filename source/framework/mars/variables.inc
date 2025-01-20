@@ -17,6 +17,7 @@ screen_drawn		rs.l 1					; Screen drawn flag
 pal_fade_intensity	rs.l 1					; Palette fade intensity
 sprite_data_slot	rs.l 1					; Sprite data slot
 
+			rs.b ($10-(__rs&$F))&$F
 draw_cmd_buffer		rs.b $400				; Draw command buffer
 gfx_data_cmd_buffer	rs.b $400				; Graphics data command buffer
 

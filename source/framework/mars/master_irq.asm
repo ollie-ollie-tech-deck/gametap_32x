@@ -201,7 +201,7 @@ MasterCmdIrq_DrawDmaEnd:
 	mov.l	r2,@-r15					; Save registers
 
 	mov.l	#$40000000+draw_cmd_buffer,r0			; Get associative purge space
-	mov.b	#$40,r1
+	mov.b	#$400/$10,r1
 	xor	r2,r2
 
 .PurgeCache:
