@@ -363,6 +363,11 @@ CheckCommandQueue:
 	or	a
 	ret	z						; If not, branch
 
+	ld	b,a						; Clear command queue
+	xor	a
+	ld	(iy),a
+	ld	a,b
+
 	ld	hl,CommandTypes-2				; Handle command
 
 ; ------------------------------------------------------------------------------
@@ -382,6 +387,9 @@ CheckMusicQueue:
 	ld	a,(iy)
 	or	a
 	jr	z,CheckSfxQueue					; If not, branch
+
+	xor	a						; Clear music queue
+	ld	(iy),a
 
 	call	PlayMusic					; Play music
 
@@ -416,10 +424,6 @@ CheckSfxQueue:
 ; ------------------------------------------------------------------------------
 
 UpdateTracks:
-	xor	a						; Clear sound queues
-	ld	(z_command_queue),a
-	ld	(z_music_queue),a
-
 	ld	ix,z_tracks					; Tracks
 	ld	b,TRACK_COUNT
 
