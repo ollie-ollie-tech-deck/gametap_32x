@@ -27,8 +27,9 @@ RingGirlTransition:
 	
 	move	#$2700,sr					; Reset screen
 	bsr.w	DisableDisplay
-	bsr.w	ClearVdpMemory
-	bsr.w	InitMarsGraphics
+	bsr.w	ClearVram
+	bsr.w	ClearVsram
+	bsr.w	InitMarsGraphics2
 
 	pea	MarsSpr_RingGirlRotoscope			; Load Ring Girl rotoscope 32X sprites
 	clr.b	-(sp)

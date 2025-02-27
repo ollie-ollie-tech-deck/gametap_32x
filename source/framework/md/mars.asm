@@ -13,12 +13,13 @@
 ; ------------------------------------------------------------------------------
 
 InitMarsGraphics:
-	bsr.w	UnloadMarsSprites				; Unload 32X sprites
-	
 	move.w	#0,-(sp)					; Clear 32X palette
 	move.b	#0,-(sp)
 	move.w	#$100,-(sp)
 	bsr.w	FillMarsPalette
+
+InitMarsGraphics2:
+	bsr.w	UnloadMarsSprites				; Unload 32X sprites
 
 	bsr.w	ClearMarsScreen					; Clear 32X screen (buffer 1)
 	bsr.s	SendMarsGraphicsCmds

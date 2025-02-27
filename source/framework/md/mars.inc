@@ -6,6 +6,7 @@
 ; ------------------------------------------------------------------------------
 
 	global InitMarsGraphics
+	global InitMarsGraphics2
 	global WaitMars
 	global SendMarsGraphicsCmds
 	global SendMarsData

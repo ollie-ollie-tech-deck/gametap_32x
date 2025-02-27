@@ -12,11 +12,12 @@
 
 BenTearScreen:
 	jsr	FadePaletteToWhite				; Fade to white
-	jsr	DisableDisplay					; Disable display
 	
 	move	#$2700,sr					; Reset screen
-	bsr.w	ClearVdpMemory
-	bsr.w	InitMarsGraphics
+	jsr	DisableDisplay
+	bsr.w	ClearVram
+	bsr.w	ClearVsram
+	bsr.w	InitMarsGraphics2
 
 	pea	MarsPal_Global					; Load global 32X palette
 	move.b	#2,-(sp)

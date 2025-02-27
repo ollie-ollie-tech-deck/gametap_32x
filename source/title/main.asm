@@ -15,7 +15,8 @@ TitleScreenScene:
 	move	#$2700,sr					; Setup V-BLANK
 	bsr.w	ClearVBlankRoutine
 	
-	bsr.w	ClearVdpMemory					; Clear VDP memory
+	bsr.w	ClearVram					; Clear VRAM
+	bsr.w	ClearVsram					; Clear VSRAM
 	bsr.w	ClearSceneVariables				; Clear scene variables
 	
 	bsr.w	UnloadMarsSprites				; Unload 32X sprites
@@ -186,22 +187,9 @@ UpdateLoop:
 	move.b	#1,-(sp)
 	move.b	#2,-(sp)
 	bsr.w	LoadMarsSprites
-	
-	bsr.w	ClearMarsScreen					; Draw logos
-	bsr.w	DrawLogos
-	bsr.w	WaitMars
 
-	bsr.w	SendMarsGraphicsCmds				; Send 32X commands
+	bsr.w	SendMarsGraphicsCmds				; Send 32X graphics commands
 	bsr.w	WaitMarsGraphicsData
-
-	lea	palette,a0					; Corrupt palette
-	moveq	#$40-1,d2
-
-.CorruptPalette:
-	bsr.w	Random
-	andi.w	#$EEE,d0
-	move.w	d0,(a0)+
-	dbf	d2,.CorruptPalette
 
 	bsr.w	Random						; Corrupt 32X background color
 	ori.w	#$8000,d0
@@ -221,6 +209,15 @@ UpdateLoop:
 	cmpi.b	#84,d2
 	bne.s	.CorruptMarsPalette
 
+	lea	palette,a0					; Corrupt palette
+	moveq	#$40-1,d2
+
+.CorruptPalette:
+	bsr.w	Random
+	andi.w	#$EEE,d0
+	move.w	d0,(a0)+
+	dbf	d2,.CorruptPalette
+
 	lea	hscroll,a0					; Corrupt horizontal scroll data
 	move.w	#224-1,d2
 
@@ -233,9 +230,14 @@ UpdateLoop:
 	
 	bsr.w	Random						; Corrupt vertical scroll value
 	move.w	d0,camera_bg_y
+
+	bsr.w	SendMarsGraphicsCmds				; Send 32X graphics commands
+	bsr.w	WaitMarsGraphicsData
 	
 	bsr.w	ClearMarsScreen					; Draw logos
 	bsr.w	DrawLogos
+
+	bsr.w	SendMarsGraphicsCmds				; Send 32X graphics commands
 	bsr.w	WaitMars
 
 	bsr.w	UpdateCram					; Update CRAM

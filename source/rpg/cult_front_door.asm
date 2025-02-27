@@ -14,13 +14,13 @@ CultFrontDoorCutscene:
 	clr.w	stage_frame_count				; Reset frame count
 
 	jsr	FadePaletteToBlack				; Fade to black
-	jsr	DisableDisplay					; Disable display
 	
 	move	#$2700,sr					; Disable interrupts
+	jsr	DisableDisplay					; Disable display
 	move.w	#$C000,d0					; Clear VRAM tables
 	move.l	#$4000,d1
 	jsr	ClearVramRegion
-	jsr	InitMarsGraphics				; Initialize 32X graphics
+	jsr	InitMarsGraphics2				; Initialize 32X graphics
 	jsr	InitScript					; Initialize scripting
 	
 	pea	MarsPal_Global					; Load global 32X palette

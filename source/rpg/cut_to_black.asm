@@ -23,14 +23,14 @@ RpgCutToBlack:
 	bra.s	.DisableDisplay
 
 .NoFade:
-	jsr	VSync						; Cut to black
-	jsr	ClearMarsScreen
-	moveq	#-7,d0
+	moveq	#-7,d0						; Cut to black
 	jsr	SetPaletteFadeIntensity
+	jsr	VSync
 
 .DisableDisplay:
 	jsr	DisableDisplay					; Disable display
 	
+	jsr	ClearMarsScreen					; Clear 32X screen
 	jsr	SendMarsGraphicsCmds				; Send 32X graphics commands
 	jsr	WaitMars
 

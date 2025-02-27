@@ -13,9 +13,10 @@
 ; ------------------------------------------------------------------------------
 
 InitScene:
-	bsr.w	ClearVdpMemory					; Clear VDP memory
+	bsr.w	ClearVram					; Clear VRAM
+	bsr.w	ClearVsram					; Clear VSRAM
 	bsr.w	ResetWindowPlanePos				; Reset window plane position
-	bsr.w	InitMarsGraphics				; Initialize 32X graphics
+	bsr.w	InitMarsGraphics2				; Initialize 32X graphics
 	bsr.w	InitSprites					; Initialize sprites
 	bsr.w	ResetDmaQueue					; Reset DMA queue
 	

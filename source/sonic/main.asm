@@ -178,7 +178,8 @@ StartUpdateLoop:
 	bsr.w	Delay
 
 	move	#$2700,sr					; Disable interrupts
-	bsr.w	ClearVdpMemory					; Clear VDP memory
+	bsr.w	ClearVram					; Clear VRAM
+	bsr.w	ClearVsram					; Clear VSRAM
 	bsr.w	ClearMarsScreen					; Clear screen
 	bsr.w	WaitMarsDraw
 
