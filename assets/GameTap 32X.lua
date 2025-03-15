@@ -331,8 +331,8 @@ local function save_sprites(filename, compressed)
 	local frame_addrs = {}
 	write_long(file, #sprite.frames)
 	for i = 1, #sprite.frames do
-		write_long(file, 4294967295)
-		frame_addrs[i] = 0
+		write_long(file, 0)
+		frame_addrs[i] = 4294967295
 	end
 
 	-- Write sprite frames
