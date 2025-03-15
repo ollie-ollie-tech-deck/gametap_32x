@@ -122,9 +122,6 @@ local function open_sprites(dlg)
 	local index_addr = 4
 
 	for i = 1, count do
-		-- Seek to sprite frame data
-		file:seek("set", read_long(file))
-		
 		-- Prepare bitstream
 		bit_pos = -1
 
@@ -137,82 +134,88 @@ local function open_sprites(dlg)
 			end
 		end
 
-		-- Get boundaries and compression information about sprite frame
-		local bound_l = read_signed_word(file)
-		local bound_r = 0
-		local bound_t = 0
-		local bound_b = 0
-		local compressed = read_byte(file) == 66
-		local x_bits = 0
-		local y_bits = 0
-		local pixel_base = 0
-		local pixel_bits = 0
+		-- Seek to sprite frame data
+		local seek_pos = read_long(file)
+		if seek_pos ~= 4294967295 then
+			file:seek("set", seek_pos)
 
-		if compressed then
-			bound_l = read_signed_byte(file)
-			x_bits = read_byte(file)
-			bound_t = read_signed_byte(file)
-			y_bits = read_byte(file)
-			pixel_base = read_byte(file)
-			pixel_bits = read_byte(file)
-			bound_r = bound_l +  read_bits(file, x_bits)
-			bound_b = bound_t +  read_bits(file, y_bits)
-		else
-			file:seek("cur", -1)
-			bound_r = read_signed_word(file)
-			bound_t = math.floor(read_signed_word(file) / 256)
-			bound_b = math.floor(read_signed_word(file) / 256)
-		end
-
-		if bound_l < max_bound_l then
-			max_bound_l = bound_l
-		end
-		if bound_r > max_bound_r then
-			max_bound_r = bound_r
-		end
-		if bound_t < max_bound_t then
-			max_bound_t = bound_t
-		end
-		if bound_b > max_bound_b then
-			max_bound_b = bound_b
-		end
-
-		-- Load sprite frame data
-		while true do
-			-- Get row left and right positions
-			local left = 0
-			local right = 0
+			-- Get boundaries and compression information about sprite frame
+			local bound_l = read_signed_word(file)
+			local bound_r = 0
+			local bound_t = 0
+			local bound_b = 0
+			local compressed = read_byte(file) == 66
+			local x_bits = 0
+			local y_bits = 0
+			local pixel_base = 0
+			local pixel_bits = 0
 
 			if compressed then
-				left = read_bits(file, x_bits) + bound_l
-				right = read_bits(file, x_bits) + bound_l
+				bound_l = read_signed_byte(file)
+				x_bits = read_byte(file)
+				bound_t = read_signed_byte(file)
+				y_bits = read_byte(file)
+				pixel_base = read_byte(file)
+				pixel_bits = read_byte(file)
+				bound_r = bound_l +  read_bits(file, x_bits)
+				bound_b = bound_t +  read_bits(file, y_bits)
 			else
-				left = read_signed_byte(file)
-				right = read_signed_byte(file)
+				file:seek("cur", -1)
+				bound_r = read_signed_word(file)
+				bound_t = math.floor(read_signed_word(file) / 256)
+				bound_b = math.floor(read_signed_word(file) / 256)
 			end
 
-			-- Check if at the end of the sprite frame data
-			if left == right then
-				break
+			if bound_l < max_bound_l then
+				max_bound_l = bound_l
+			end
+			if bound_r > max_bound_r then
+				max_bound_r = bound_r
+			end
+			if bound_t < max_bound_t then
+				max_bound_t = bound_t
+			end
+			if bound_b > max_bound_b then
+				max_bound_b = bound_b
 			end
 
-			-- Get row Y position
-			local y = 0
-			if compressed then
-				y = read_bits(file, y_bits) + bound_t
-			else
-				y = math.floor(read_signed_word(file) / 256)
-			end
+			-- Load sprite frame data
+			while true do
+				-- Get row left and right positions
+				local left = 0
+				local right = 0
 
-			-- Load row data
-			for x = left + 1, right do
-				local px = 0
 				if compressed then
-					px = read_bits(file, pixel_bits) + pixel_base
+					left = read_bits(file, x_bits) + bound_l
+					right = read_bits(file, x_bits) + bound_l
 				else
-					px = read_byte(file)
+					left = read_signed_byte(file)
+					right = read_signed_byte(file)
 				end
-				canvas[i][y + 1][x] = px
+
+				-- Check if at the end of the sprite frame data
+				if left == right then
+					break
+				end
+
+				-- Get row Y position
+				local y = 0
+				if compressed then
+					y = read_bits(file, y_bits) + bound_t
+				else
+					y = math.floor(read_signed_word(file) / 256)
+				end
+
+				-- Load row data
+				for x = left + 1, right do
+					local px = 0
+					if compressed then
+						px = read_bits(file, pixel_bits) + pixel_base
+					else
+						px = read_byte(file)
+					end
+					canvas[i][y + 1][x] = px
+				end
 			end
 		end
 
