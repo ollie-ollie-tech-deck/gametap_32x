@@ -608,6 +608,14 @@ local function save_compressed_chaotix_sprites(dlg)
 	save_sprites(dlg.data.sprites_save_compressed_chaotix_file, true, true)
 end
 
+-- Set palette color
+local function set_palette_color(palette, color, i)
+	local r = math.floor(((color % 32) * 255) / 31)
+	local g = math.floor(((math.floor(color / 32) % 32) * 255) / 31)
+	local b = math.floor(((math.floor(color / 1024) % 32) * 255) / 31)
+	palette:setColor(i, Color{ r = r, g = g, b = b })
+end
+
 -- Open palette
 local function open_palette(dlg)
 	-- Check if a sprite is active
@@ -625,29 +633,58 @@ local function open_palette(dlg)
 	-- Set colors
 	local color = 0
 	for i = 1, count do
-		local color = read_word(file)
-		local r = math.floor(((color % 32) * 255) / 31)
-		local g = math.floor(((math.floor(color / 32) % 32) * 255) / 31)
-		local b = math.floor(((math.floor(color / 1024) % 32) * 255) / 31)
-		palette:setColor(i, Color{ r = r, g = g, b = b })
+		set_palette_color(palette, read_word(file), i)
 	end
 
 	-- Close file
 	file:close()
 end
 
--- Save palette
-local function save_palette(dlg)
+-- Open Chaotix palette
+local function open_chaotix_palette(dlg)
 	-- Check if a sprite is active
 	local sprite = app.activeSprite
 	if not sprite then return app.alert("No active sprite") end
 
 	-- Open palette file
-	local file = io.open(dlg.data.palette_save_file, "wb")
+	local palette = sprite.palettes[1]
+	local file = io.open(dlg.data.palette_open_chaotix_file, "rb")
+	local read = file:read(2 * 255)
+
+	-- Set colors
+	local i = 0
+	local color = 0
+	for c in (read or ''):gmatch'.' do
+		local byte = c:byte()
+		if i % 2 == 0 then
+			color = byte * 256
+		else
+			local idx = math.floor(i / 2) + 1
+			color = color + byte
+			palette:resize(idx + 1)
+			set_palette_color(palette, color, idx)
+		end
+		i = i + 1
+	end
+
+	-- Close file
+	file:close()
+end
+
+-- Save palette file
+local function save_palette_file(filename, chaotix)
+	-- Check if a sprite is active
+	local sprite = app.activeSprite
+	if not sprite then return app.alert("No active sprite") end
+
+	-- Open palette file
+	local file = io.open(filename, "wb")
 
 	-- Write color count
 	local palette = sprite.palettes[1]
-	write_word(file, #palette - 1, false)
+	if not chaotix then
+		write_word(file, #palette - 1, false)
+	end
 
 	-- Write colors
 	for i = 1, #palette - 1 do
@@ -662,6 +699,16 @@ local function save_palette(dlg)
 
 	-- Close file
 	file:close()
+end
+
+-- Save palette
+local function save_palette(dlg)
+	save_palette_file(dlg.data.palette_save_file, false)
+end
+
+-- Save Chaotix palette
+local function save_chaotix_palette(dlg)
+	save_palette_file(dlg.data.palette_save_chaotix_file, true)
 end
 
 -- Open file dialog
@@ -742,6 +789,28 @@ dlg:file{
 	filetypes = { "pal" },
 	onchange = function()
 		save_palette(dlg)
+		dlg:close()
+	end
+}
+dlg:file{
+	id = "palette_open_chaotix_file",
+	label = "Open Chaotix Palette",
+	open = true,
+	save = false,
+	filetypes = { "pal" },
+	onchange = function()
+		open_chaotix_palette(dlg)
+		dlg:close()
+	end
+}
+dlg:file{
+	id = "palette_save_chaotix_file",
+	label = "Save Chaotix Palette",
+	open = false,
+	save = true,
+	filetypes = { "pal" },
+	onchange = function()
+		save_chaotix_palette(dlg)
 		dlg:close()
 	end
 }
