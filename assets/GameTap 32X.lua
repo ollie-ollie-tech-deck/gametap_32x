@@ -1,6 +1,8 @@
 -- Bitstream
 local bit_pos = 0
 local cur_byte = 0
+local line_pos = 0
+local cur_type = ""
 
 -- Get number of bits a number has
 local function get_bits(val)
@@ -12,49 +14,82 @@ local function mask_byte(val)
 	return string.char(math.floor(val) % 256)
 end
 
+-- Write a value to the file in Chaotix format
+local function write_chaotix_value(file, val, type)
+	if cur_type ~= type then
+		if line_pos > 0 then
+			file:write("\n")
+		end
+		line_pos = 0
+		cur_type = type
+	end
+	if line_pos % 16 == 0 then
+		file:write("\t" .. type .. "\t")
+	else
+		file:write(", ")
+	end
+	file:write(val)
+	if line_pos % 16 == 15 then
+		file:write("\n")
+	end
+	line_pos = line_pos + 1
+end
+
 -- Write a byte to the file
-local function write_byte(file, val)
-	file:write(mask_byte(val))
+local function write_byte(file, val, chaotix)
+	if chaotix then
+		write_chaotix_value(file, val, "dc.b")
+	else
+		file:write(mask_byte(val))
+	end
 end
 
 -- Write a word to the file
-local function write_word(file, val)
-	file:write(mask_byte(val / 256))
-	file:write(mask_byte(val))
+local function write_word(file, val, chaotix)
+	if chaotix then
+		write_chaotix_value(file, val, "dc.w")
+	else
+		file:write(mask_byte(val / 256))
+		file:write(mask_byte(val))
+	end
 end
 
 -- Write a longword to the file
-local function write_long(file, val)
-	write_word(file, val / 65536)
-	write_word(file, val)
+local function write_long(file, val, chaotix)
+	if chaotix then
+		write_chaotix_value(file, val, "dc.l")
+	else
+		write_word(file, val / 65536)
+		write_word(file, val)
+	end
 end
 
 -- Write byte of bitstream to file
-local function write_bitstream_byte(file)
-	write_byte(file, cur_byte)
+local function write_bitstream_byte(file, chaotix)
+	write_byte(file, cur_byte, chaotix)
 	bit_pos = 0
 	cur_byte = 0
 end
 
 -- Write bits to file
-local function write_bits(file, val, bits)
+local function write_bits(file, val, bits, chaotix)
 	for i = bits - 1, 0, -1 do
 		cur_byte = (cur_byte * 2) + (math.floor(val / (2 ^ i)) % 2)
 		bit_pos = bit_pos + 1
 		if bit_pos == 8 then
-			write_bitstream_byte(file)
+			write_bitstream_byte(file, chaotix)
 		end
 	end
 end
 
 -- Flush bits to file
-local function flush_bits(file)
+local function flush_bits(file, chaotix)
 	if bit_pos > 0 then
 		while bit_pos < 8 do
 			cur_byte = (cur_byte * 2)
 			bit_pos = bit_pos + 1
 		end
-		write_bitstream_byte(file)
+		write_bitstream_byte(file, chaotix)
 	end
 end
 
@@ -293,7 +328,7 @@ local function process_layer(layer, sprite, canvas)
 end
 
 -- Save sprites
-local function save_sprites(filename, compressed)
+local function save_sprites(filename, compressed, chaotix)
 	-- Check if a sprite is active
 	local sprite = app.activeSprite
 	if not sprite then return app.alert("No active sprite") end
@@ -325,14 +360,36 @@ local function save_sprites(filename, compressed)
 	end
 
 	-- Open sprite file
-	local file = io.open(filename, "wb")
+	local mode = "wb"
+	if chaotix then
+		mode = "w"
+	end
+	local file = io.open(filename, mode)
 
-	-- Write blank sprite frame index
+	-- Prepare sprite frame index
 	local frame_addrs = {}
-	write_long(file, #sprite.frames)
-	for i = 1, #sprite.frames do
-		write_long(file, 0)
-		frame_addrs[i] = 4294967295
+	if not chaotix then
+		-- Write blank sprite frame index
+		write_long(file, #sprite.frames, false)
+		for i = 1, #sprite.frames do
+			write_long(file, 0, false)
+			frame_addrs[i] = 0
+		end
+	else
+		-- Write random label
+		math.randomseed(os.time())
+		file:write("ChaotixSprites_")
+		local valid = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+		for i = 1, 16 do
+			local char_pos = math.random(1, #valid)
+			file:write(string.sub(valid, char_pos, char_pos))
+		end
+		file:write(":\n")
+
+		-- Write sprite frame index
+		for i = 1, #sprite.frames do
+			file:write("\tdc.l\t" .. ".Frame" .. i .. "\n")
+		end
 	end
 
 	-- Write sprite frames
@@ -345,14 +402,12 @@ local function save_sprites(filename, compressed)
 		local pixel_base = 65536
 		local max_pixel = 0
 
-		local used = false
 		for y = 1, sprite.height do
 			for x = 1, sprite.width do
 				local px = (x - 1) - math.floor(sprite_width / 2)
 				local py = (y - 1) - math.floor(sprite_height / 2)
 
 				if canvas[i][y][x] ~= 0 then
-					used = true
 					if px < bound_l then
 						bound_l = px
 					end
@@ -376,144 +431,157 @@ local function save_sprites(filename, compressed)
 			end
 		end
 
-		if used then
-			bound_l = bound_l - width_expand
-			bound_r = bound_r + width_expand
-			bound_l = bound_l - (bound_l % 2)
-			bound_r = bound_r + (bound_r % 2)
-			
-			local x_bits = get_bits(bound_r - bound_l)
-			local y_bits = get_bits(bound_b - bound_t)
-			local pixel_bits = get_bits(max_pixel - pixel_base)
+		bound_l = bound_l - width_expand
+		bound_r = bound_r + width_expand
+		bound_l = bound_l - (bound_l % 2)
+		bound_r = bound_r + (bound_r % 2)
+		
+		local x_bits = get_bits(bound_r - bound_l)
+		local y_bits = get_bits(bound_b - bound_t)
+		local pixel_bits = get_bits(max_pixel - pixel_base)
 
-			if (max_pixel - pixel_base) == 0 then
-				pixel_bits = 1
-				if pixel_base > 0 then
-					pixel_base = pixel_base - 1
-				end
-			end
-			
-			-- Get row positions length of sprite frame data
-			local frame_len = 10
-			local frame_rows = {}
-			local row_idx = 1
-			
-			for y = 1, sprite.height do
-				used = false
-
-				-- Get left
-				local left = 0
-				for x = 1, sprite.width do
-					if canvas[i][y][x] ~= 0 then
-						left = x - 1
-						used = true
-						break
-					end
-				end
-				left = left - (left % 2)
-
-				-- Get right
-				local right = 0
-				for x = 1, sprite.width do
-					if canvas[i][y][(sprite.width + 1) - x] ~= 0 then
-						right = (sprite.width + 1) - x
-						used = true
-						break
-					end
-				end
-				right = right + (right % 2)
-				
-				-- Check if row is defined
-				if used then
-					frame_rows[row_idx] = {}
-					frame_rows[row_idx][1] = left
-					frame_rows[row_idx][2] = right
-					frame_rows[row_idx][3] = y
-					row_idx = row_idx + 1
-					frame_len = frame_len + (right - left) + 4
-				end
-			end
-			
-			-- Prepare for writing
-			bit_pos = 0
-			cur_byte = 0
-			frame_addrs[i] = file:seek()
-
-			-- Write header
-			if compressed then
-				write_word(file, frame_len)
-				write_byte(file, 66)
-				write_byte(file, bound_l)
-				write_byte(file, x_bits)
-				write_byte(file, bound_t)
-				write_byte(file, y_bits)
-				write_byte(file, pixel_base)
-				write_byte(file, pixel_bits)
-				write_bits(file, bound_r - bound_l, x_bits)
-				write_bits(file, bound_b - bound_t, y_bits)
-			else
-				write_word(file, bound_l)
-				write_word(file, bound_r)
-				write_byte(file, bound_t)
-				write_byte(file, 0)
-				write_byte(file, bound_b)
-				write_byte(file, 0)
-			end
-
-			-- Write pixels
-			for r = 1, #frame_rows do
-				local left = frame_rows[r][1]
-				local right = frame_rows[r][2]
-				local y = frame_rows[r][3]
-
-				-- Row position
-				if compressed then
-					write_bits(file, (left - math.floor(sprite_width / 2)) - width_expand - bound_l, x_bits)
-					write_bits(file, (right - math.floor(sprite_width / 2)) + width_expand - bound_l, x_bits)
-					write_bits(file, (y - math.floor(sprite_height / 2) - 1) - bound_t, y_bits)
-				else
-					write_byte(file, left - math.floor(sprite_width / 2) - width_expand)
-					write_byte(file, right - math.floor(sprite_width / 2) + width_expand)
-					write_byte(file, y - math.floor(sprite_height / 2) - 1)
-					write_byte(file, 0)
-				end
-
-				-- Write pixel data
-				local r = 0
-				for x = (left + 1) - width_expand, right + width_expand do
-					local px = canvas[i][y][x]
-					if compressed then
-						px = px - pixel_base
-						if px < 0 then
-							px = 0
-						end
-						write_bits(file, px, pixel_bits)
-					else
-						write_byte(file, px)
-					end
-				end
-			end
-			
-			-- Write terminator
-			if compressed then
-				write_bits(file, 0, x_bits)
-				write_bits(file, 0, x_bits)
-				flush_bits(file)
-			else
-				write_byte(file, 0)
-				write_byte(file, 0)
-			end
-
-			while (file:seek() % 2) ~= 0 do
-				write_byte(file, 0)
+		if (max_pixel - pixel_base) == 0 then
+			pixel_bits = 1
+			if pixel_base > 0 then
+				pixel_base = pixel_base - 1
 			end
 		end
+		
+		-- Get row positions length of sprite frame data
+		local frame_len = 10
+		local frame_rows = {}
+		local row_idx = 1
+		
+		for y = 1, sprite.height do
+			used = false
+
+			-- Get left
+			local left = 0
+			for x = 1, sprite.width do
+				if canvas[i][y][x] ~= 0 then
+					left = x - 1
+					used = true
+					break
+				end
+			end
+			left = left - (left % 2)
+
+			-- Get right
+			local right = 0
+			for x = 1, sprite.width do
+				if canvas[i][y][(sprite.width + 1) - x] ~= 0 then
+					right = (sprite.width + 1) - x
+					used = true
+					break
+				end
+			end
+			right = right + (right % 2)
+			
+			-- Check if row is defined
+			if used then
+				frame_rows[row_idx] = {}
+				frame_rows[row_idx][1] = left
+				frame_rows[row_idx][2] = right
+				frame_rows[row_idx][3] = y
+				row_idx = row_idx + 1
+				frame_len = frame_len + (right - left) + 4
+			end
+		end
+		
+		-- Prepare for writing
+		bit_pos = 0
+		cur_byte = 0
+		if not chaotix then
+			frame_addrs[i] = file:seek()
+		end
+
+		-- Write header
+		if chaotix then
+			file:write("\n.Frame" .. i .. ":\n")
+		end
+		if compressed then
+			write_word(file, frame_len, chaotix)
+			write_byte(file, 66, chaotix)
+			write_byte(file, bound_l, chaotix)
+			write_byte(file, x_bits, chaotix)
+			write_byte(file, bound_t, chaotix)
+			write_byte(file, y_bits, chaotix)
+			write_byte(file, pixel_base, chaotix)
+			write_byte(file, pixel_bits, chaotix)
+			write_bits(file, bound_r - bound_l, x_bits, chaotix)
+			write_bits(file, bound_b - bound_t, y_bits, chaotix)
+		else
+			write_word(file, bound_l, chaotix)
+			write_word(file, bound_r, chaotix)
+			write_byte(file, bound_t, chaotix)
+			write_byte(file, 0, chaotix)
+			write_byte(file, bound_b, chaotix)
+			write_byte(file, 0, chaotix)
+		end
+
+		-- Write pixels
+		for r = 1, #frame_rows do
+			local left = frame_rows[r][1]
+			local right = frame_rows[r][2]
+			local y = frame_rows[r][3]
+
+			-- Row position
+			if compressed then
+				write_bits(file, (left - math.floor(sprite_width / 2)) - width_expand - bound_l, x_bits, chaotix)
+				write_bits(file, (right - math.floor(sprite_width / 2)) + width_expand - bound_l, x_bits, chaotix)
+				write_bits(file, (y - math.floor(sprite_height / 2) - 1) - bound_t, y_bits, chaotix)
+			else
+				write_byte(file, left - math.floor(sprite_width / 2) - width_expand, chaotix)
+				write_byte(file, right - math.floor(sprite_width / 2) + width_expand, chaotix)
+				write_byte(file, y - math.floor(sprite_height / 2) - 1, chaotix)
+				write_byte(file, 0, chaotix)
+			end
+
+			-- Write pixel data
+			local r = 0
+			for x = (left + 1) - width_expand, right + width_expand do
+				local px = canvas[i][y][x]
+				if compressed then
+					px = px - pixel_base
+					if px < 0 then
+						px = 0
+					end
+					write_bits(file, px, pixel_bits, chaotix)
+				else
+					write_byte(file, px, chaotix)
+				end
+			end
+		end
+		
+		-- Write terminator
+		if compressed then
+			write_bits(file, 0, x_bits, chaotix)
+			write_bits(file, 0, x_bits, chaotix)
+			flush_bits(file, chaotix)
+		else
+			write_byte(file, 0, chaotix)
+			write_byte(file, 0, chaotix)
+		end
+
+		if not chaotix then
+			while (file:seek() % 2) ~= 0 do
+				write_byte(file, 0, false)
+			end
+		else
+			if line_pos % 16 ~= 0 then
+				file:write("\n")
+			end
+			file:write("\teven\n")
+		end
+		line_pos = 0
 	end
 
 	-- Write frame index
-	file:seek("set", 4)
-	for i = 1, #sprite.frames do
-		write_long(file, frame_addrs[i])
+	if not chaotix then
+		file:seek("set", 4)
+		for i = 1, #sprite.frames do
+			write_long(file, frame_addrs[i], false)
+		end
 	end
 
 	-- Close file
@@ -522,12 +590,22 @@ end
 
 -- Save uncompressed sprites
 local function save_uncompressed_sprites(dlg)
-	save_sprites(dlg.data.sprites_save_uncompressed_file, false)
+	save_sprites(dlg.data.sprites_save_uncompressed_file, false, false)
 end
 
 -- Save compressed sprites
 local function save_compressed_sprites(dlg)
-	save_sprites(dlg.data.sprites_save_compressed_file, true)
+	save_sprites(dlg.data.sprites_save_compressed_file, true, false)
+end
+
+-- Save uncompressed Chaotix sprites
+local function save_uncompressed_chaotix_sprites(dlg)
+	save_sprites(dlg.data.sprites_save_uncompressed_chaotix_file, false, true)
+end
+
+-- Save compressed Chaotix sprites
+local function save_compressed_chaotix_sprites(dlg)
+	save_sprites(dlg.data.sprites_save_compressed_chaotix_file, true, true)
 end
 
 -- Open palette
@@ -569,7 +647,7 @@ local function save_palette(dlg)
 
 	-- Write color count
 	local palette = sprite.palettes[1]
-	write_word(file, #palette - 1)
+	write_word(file, #palette - 1, false)
 
 	-- Write colors
 	for i = 1, #palette - 1 do
@@ -579,7 +657,7 @@ local function save_palette(dlg)
 		local b = math.floor(((color.blue * 31) / 255) + 0.5)
 		
 		local bgr = (b * 1024) + (g * 32) + r
-		write_word(file, bgr)
+		write_word(file, bgr, false)
 	end
 
 	-- Close file
@@ -620,6 +698,28 @@ dlg:file{
 	filetypes = { "spr" },
 	onchange = function()
 		save_compressed_sprites(dlg)
+		dlg:close()
+	end
+}
+dlg:file{
+	id = "sprites_save_uncompressed_chaotix_file",
+	label = "Save Uncompressed Chaotix Sprites",
+	open = false,
+	save = true,
+	filetypes = { "asm" },
+	onchange = function()
+		save_uncompressed_chaotix_sprites(dlg)
+		dlg:close()
+	end
+}
+dlg:file{
+	id = "sprites_save_compressed_chaotix_file",
+	label = "Save Compressed Chaotix Sprites",
+	open = false,
+	save = true,
+	filetypes = { "asm" },
+	onchange = function()
+		save_compressed_chaotix_sprites(dlg)
 		dlg:close()
 	end
 }
