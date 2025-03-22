@@ -395,6 +395,7 @@ local function save_sprites(filename, compressed, chaotix)
 	-- Write sprite frames
 	for i = 1, #sprite.frames do
 		-- Get boundaries and compression information about sprite frame
+		local used = false
 		local bound_l = 65536
 		local bound_r = -65536
 		local bound_t = 65536
@@ -408,6 +409,7 @@ local function save_sprites(filename, compressed, chaotix)
 				local py = (y - 1) - math.floor(sprite_height / 2)
 
 				if canvas[i][y][x] ~= 0 then
+					used = true
 					if px < bound_l then
 						bound_l = px
 					end
@@ -435,6 +437,13 @@ local function save_sprites(filename, compressed, chaotix)
 		bound_r = bound_r + width_expand
 		bound_l = bound_l - (bound_l % 2)
 		bound_r = bound_r + (bound_r % 2)
+
+		if not used then
+			bound_l = 0
+			bound_r = 0
+			bound_t = 0
+			bound_b = 0
+		end
 		
 		local x_bits = get_bits(bound_r - bound_l)
 		local y_bits = get_bits(bound_b - bound_t)
