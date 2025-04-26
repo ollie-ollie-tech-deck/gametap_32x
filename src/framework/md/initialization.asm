@@ -305,7 +305,7 @@ SoftReset:
 ; ------------------------------------------------------------------------------
 
 .Z80Program:
-	incbin	"build/z80.bin"
+	incbin	"out/z80.bin"
 .Z80ProgramEnd:
 	even
 
