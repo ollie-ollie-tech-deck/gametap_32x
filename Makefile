@@ -9,10 +9,10 @@ REFRESH_RATE               := 60
 # Folder paths
 # ------------------------------------------------------------------------------
 
-BUILD_PATH                 := build
+OUT_PATH                   := out
 SRC_PATH                   := src
-OBJ_PATH                   := $(BUILD_PATH)/.obj
-BUILD_PATH_EXISTS          := $(wildcard $(BUILD_PATH))
+OBJ_PATH                   := $(OUT_PATH)/.obj
+OUT_PATH_EXISTS            := $(wildcard $(OUT_PATH))
 
 # ------------------------------------------------------------------------------
 # Tools
@@ -306,15 +306,15 @@ OBJ_REPORT_FILES           := $(OBJ_MD_REPORT) \
 # Compile everything together
 # ------------------------------------------------------------------------------
 
-all: $(BUILD_PATH)/$(OUT_ROM) $(OBJ_REPORT_FILES)
+all: $(OUT_PATH)/$(OUT_ROM) $(OBJ_REPORT_FILES)
 
 # ------------------------------------------------------------------------------
 # Clean
 # ------------------------------------------------------------------------------
 
 clean:
-ifneq ($(BUILD_PATH_EXISTS),)
-	@rmdir /s /q "$(BUILD_PATH)"
+ifneq ($(OUT_PATH_EXISTS),)
+	@rmdir /s /q "$(OUT_PATH)"
 endif
 
 # ------------------------------------------------------------------------------
@@ -341,17 +341,17 @@ $(OBJ_GAME_REPORT): $(OBJ_PATH)/%.o: $(SRC_PATH)/%.asm
 # ROM rules
 # ------------------------------------------------------------------------------
 
-$(BUILD_PATH)/$(OUT_ROM): $(OBJ_FILES) | $(BUILD_PATH) $(OBJ_PATH) $(BUILD_PATH)/z80.bin
+$(OUT_PATH)/$(OUT_ROM): $(OBJ_FILES) | $(OUT_PATH) $(OBJ_PATH) $(OUT_PATH)/z80.bin
 	$(BUILD_MSG)
-	$(MAKE_PSYLINK) -c linker.link -o $(BUILD_PATH)/linker.link $^
-	$(PSYLINK) $(PSYLINK_FLAGS) /p @$(BUILD_PATH)/linker.link,$@
+	$(MAKE_PSYLINK) -c linker.link -o $(OUT_PATH)/linker.link $^
+	$(PSYLINK) $(PSYLINK_FLAGS) /p @$(OUT_PATH)/linker.link,$@
 	$(MDROMFIX) $@
 
 # ------------------------------------------------------------------------------
 # Z80 sound driver rules
 # ------------------------------------------------------------------------------
 
-$(BUILD_PATH)/z80.bin: $(OBJ_Z80) | $(BUILD_PATH)
+$(OUT_PATH)/z80.bin: $(OBJ_Z80) | $(OUT_PATH)
 	$(P2BIN) $(P2BIN_FLAGS) $< $@
 
 $(OBJ_Z80): $(OBJ_PATH)/%.p: $(SRC_PATH)/%.asm | $(DEPEND_Z80)
@@ -366,7 +366,7 @@ $(DEPEND_Z80): $(OBJ_PATH)/%.d: $(SRC_PATH)/%.asm | $(OBJ_PATH_Z80)
 # Framework rules
 # ------------------------------------------------------------------------------
 
-$(OBJ_FRAMEWORK_MD): $(OBJ_PATH)/%.o: $(SRC_PATH)/%.asm | $(BUILD_PATH)/z80.bin $(DEPEND_FRAMEWORK_MD)
+$(OBJ_FRAMEWORK_MD): $(OBJ_PATH)/%.o: $(SRC_PATH)/%.asm | $(OUT_PATH)/z80.bin $(DEPEND_FRAMEWORK_MD)
 	$(ASSEMBLE_MSG)
 	$(ASM68K) $(ASM68K_FLAGS) $<,$@,,$(patsubst %.o,%.lst,$@)
 
@@ -590,7 +590,7 @@ $(DEPEND_CREDITS_DATA_MARS): $(OBJ_PATH)/%.d: $(SRC_PATH)/%.asm | $(OBJ_PATH_CRE
 # Create folders
 # ------------------------------------------------------------------------------
 
-$(BUILD_PATH):
+$(OUT_PATH):
 	@mkdir "$@"
 
 $(OBJ_PATH):
