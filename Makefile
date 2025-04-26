@@ -10,7 +10,7 @@ REFRESH_RATE               := 60
 # ------------------------------------------------------------------------------
 
 BUILD_PATH                 := build
-SRC_PATH                   := source
+SRC_PATH                   := src
 OBJ_PATH                   := $(BUILD_PATH)/.obj
 BUILD_PATH_EXISTS          := $(wildcard $(BUILD_PATH))
 
