@@ -1,4 +1,4 @@
 @echo off
-SET PATH=%PATH%;.\tools
+SET PATH=%PATH%;.\bin
 make clean
 pause
